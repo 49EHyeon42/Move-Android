@@ -13,6 +13,11 @@
         android:theme="@style/Theme.MoveApplication"
         tools:targetApi="31">
 
+        <!-- Add google maps API meta-data -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${GOOGLE_MAPS_API_KEY}" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
