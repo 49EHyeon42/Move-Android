@@ -1,4 +1,4 @@
-package dev.ehyeon.moveapplication.data.distance;
+package dev.ehyeon.moveapplication.data.location;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
