@@ -13,19 +13,46 @@ import androidx.lifecycle.MutableLiveData;
 
 public class StepRepository implements SensorEventListener2 {
 
-    private final SensorManager sensorManager;
+    private static volatile StepRepository stepRepository;
+
     private final MutableLiveData<Integer> step;
 
-    public StepRepository(Context context) {
-        this.sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        this.step = new MutableLiveData<>(0);
+    private SensorManager sensorManager;
+
+    private StepRepository() {
+        step = new MutableLiveData<>(0);
+    }
+
+    public static StepRepository getInstance() {
+        if (stepRepository == null) {
+            synchronized (StepRepository.class) {
+                if (stepRepository == null) {
+                    stepRepository = new StepRepository();
+                }
+            }
+        }
+
+        return stepRepository;
+    }
+
+    public void initializeContext(Context context) {
+        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+
     }
 
     public void startSensor() {
+        if (sensorManager == null) {
+            return;
+        }
+
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR), SENSOR_DELAY_NORMAL);
     }
 
     public void stopSensor() {
+        if (sensorManager == null) {
+            return;
+        }
+
         sensorManager.unregisterListener(this);
         step.setValue(0);
     }
