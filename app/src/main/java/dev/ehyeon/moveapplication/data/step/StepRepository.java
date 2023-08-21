@@ -2,6 +2,7 @@ package dev.ehyeon.moveapplication.data.step;
 
 import static android.hardware.SensorManager.SENSOR_DELAY_NORMAL;
 
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener2;
@@ -15,8 +16,8 @@ public class StepRepository implements SensorEventListener2 {
     private final SensorManager sensorManager;
     private final MutableLiveData<Integer> step;
 
-    public StepRepository(SensorManager sensorManager) {
-        this.sensorManager = sensorManager;
+    public StepRepository(Context context) {
+        this.sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         this.step = new MutableLiveData<>(0);
     }
 
