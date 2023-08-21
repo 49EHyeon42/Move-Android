@@ -36,8 +36,12 @@ public class StepRepository implements SensorEventListener2 {
     }
 
     public void initializeContext(Context context) {
-        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        if (context == null) {
+            sensorManager = null;
+            return;
+        }
 
+        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
     }
 
     public void startSensor() {
