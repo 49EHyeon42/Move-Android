@@ -45,6 +45,7 @@ public class StepRepository implements SensorEventListener2 {
             return;
         }
 
+        step.setValue(0);
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR), SENSOR_DELAY_NORMAL);
     }
 
@@ -54,7 +55,6 @@ public class StepRepository implements SensorEventListener2 {
         }
 
         sensorManager.unregisterListener(this);
-        step.setValue(0);
     }
 
     public LiveData<Integer> getStep() {
