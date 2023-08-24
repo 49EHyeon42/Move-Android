@@ -22,13 +22,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityMainBinding activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         fragments = new HashMap<>();
         fragments.put(R.id.menu_home, new HomeFragment());
         fragments.put(R.id.menu_profile, new SettingFragment());
 
-        activityMainBinding.activityMainBottomNavigationView.setOnItemSelectedListener(item -> showFragment(item.getItemId()));
+        binding.activityMainBottomNavigationView.setOnItemSelectedListener(item -> showFragment(item.getItemId()));
 
         showFragment(R.id.menu_home);
     }
