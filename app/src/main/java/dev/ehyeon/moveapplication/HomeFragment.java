@@ -1,8 +1,10 @@
 package dev.ehyeon.moveapplication;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -15,41 +17,67 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.CancellationToken;
-import com.google.android.gms.tasks.OnTokenCanceledListener;
 
 import dev.ehyeon.moveapplication.databinding.FragmentHomeBinding;
+import dev.ehyeon.moveapplication.service.TrackingService;
+import dev.ehyeon.moveapplication.service.TrackingServiceAction;
+import dev.ehyeon.moveapplication.service.TrackingServiceBinder;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
-    private TrackingService trackingService;
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(TrackingServiceAction.TRACKING_SERVICE_IS_RUNNING.getAction())) {
+                requireContext().bindService(new Intent(getActivity(), TrackingService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+            }
+        }
+    };
+
     private final ServiceConnection serviceConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            trackingService = ((TrackingService.TrackingBinder) service).getService();
+            trackingServiceMutableLiveData.setValue(((TrackingServiceBinder) service).getTrackingService());
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            // unbindService 가 아닌 의도치 않은 상황으로 연결이 끊겼을 때 호출
-            trackingService = null;
+            trackingServiceMutableLiveData.setValue(null);
         }
     };
+
+    private final MutableLiveData<TrackingService> trackingServiceMutableLiveData = new MutableLiveData<>();
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        LocalBroadcastManager
+                .getInstance(requireContext())
+                .registerReceiver(broadcastReceiver,
+                        new IntentFilter(TrackingServiceAction.TRACKING_SERVICE_IS_RUNNING.getAction()));
+
+        LocalBroadcastManager
+                .getInstance(requireContext())
+                .sendBroadcast(new Intent(TrackingServiceAction.IS_TRACKING_SERVICE_RUNNING.getAction()));
+    }
+
+    private FragmentHomeBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        FragmentHomeBinding fragmentHomeBinding = FragmentHomeBinding.inflate(inflater, container, false);
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
 
         SupportMapFragment googleMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragmentHome_supportGoogleMapFragment);
 
@@ -57,17 +85,23 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             googleMapFragment.getMapAsync(this);
         }
 
-        fragmentHomeBinding.fragmentHomeTrackingServiceButton.setOnClickListener(ignored -> {
-            if (trackingService == null) {
-                Intent intent = new Intent(getContext(), TrackingService.class);
-                requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-            } else {
+        binding.fragmentHomeTrackingServiceButton.setOnClickListener(ignored -> {
+            Intent trackingServiceIntent = new Intent(requireContext(), TrackingService.class);
+
+            if (trackingServiceMutableLiveData.getValue() != null) {
                 requireContext().unbindService(serviceConnection);
-                trackingService = null;
+
+                if (requireContext().stopService(trackingServiceIntent)) {
+                    trackingServiceMutableLiveData.setValue(null);
+                }
+            } else {
+                if (requireContext().startForegroundService(trackingServiceIntent) != null) {
+                    requireContext().bindService(trackingServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+                }
             }
         });
 
-        return fragmentHomeBinding.getRoot();
+        return binding.getRoot();
     }
 
     @Override
@@ -79,20 +113,21 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
 
         googleMap.setMyLocationEnabled(true);
+    }
 
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, new CancellationToken() {
-            @NonNull
-            @Override
-            public CancellationToken onCanceledRequested(@NonNull OnTokenCanceledListener onTokenCanceledListener) {
-                return null;
-            }
+        // TODO change
+        trackingServiceMutableLiveData.observe(getViewLifecycleOwner(), trackingService ->
+                binding.fragmentHomeTimeTextView.setText(trackingService == null ? "Not Running" : "Running"));
+    }
 
-            @Override
-            public boolean isCancellationRequested() {
-                return false;
-            }
-        }).addOnSuccessListener(location -> googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 17)));
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(broadcastReceiver);
     }
 }
