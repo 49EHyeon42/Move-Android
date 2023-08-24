@@ -139,26 +139,26 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
             trackingService.getSecondLiveData().observe(trackingService, second ->
                     binding.fragmentHomeTimeTextView
-                            .setText(String.format(Locale.getDefault(), "%02d:%02d:%02d", second / 3600, (second % 3600) / 60, second % 60)));
+                            .setText(String.format(Locale.getDefault(), "경과 시간 %02d:%02d:%02d", second / 3600, (second % 3600) / 60, second % 60)));
 
             trackingService.getTotalDistanceLiveData().observe(trackingService, totalDistance ->
                     binding.fragmentHomeTotalDistanceTextView
-                            .setText(String.format(Locale.getDefault(), "%f", totalDistance)));
+                            .setText(String.format(Locale.getDefault(), "총 이동 거리 %f m", totalDistance)));
 
             trackingService.getTopSpeedLiveData().observe(trackingService, topSpeed ->
                     binding.fragmentHomeTopSpeedTextView
-                            .setText(String.format(Locale.getDefault(), "%f", topSpeed)));
+                            .setText(String.format(Locale.getDefault(), "최고 속력 %f km/h", topSpeed)));
 
             trackingService.getCurrentSpeedLiveData().observe(trackingService, currentSpeed ->
                     binding.fragmentHomeCurrentSpeedTextView
-                            .setText(String.format(Locale.getDefault(), "%f", currentSpeed)));
+                            .setText(String.format(Locale.getDefault(), "현재 속력 %f km/h", currentSpeed)));
 
             trackingService.getAverageSpeedMutableLiveData().observe(trackingService, averageSpeed ->
                     binding.fragmentHomeAverageSpeedTextView
-                            .setText(String.format(Locale.getDefault(), "%f", averageSpeed)));
+                            .setText(String.format(Locale.getDefault(), "평균 속력 %f km/h", averageSpeed)));
 
             trackingService.getStepLiveData().observe(trackingService, step ->
-                    binding.fragmentHomeStepTextView.setText(String.format(Locale.getDefault(), "%d", step)));
+                    binding.fragmentHomeStepTextView.setText(String.format(Locale.getDefault(), "걸음 수 %d", step)));
         });
     }
 
