@@ -145,14 +145,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     binding.fragmentHomeTotalDistanceTextView
                             .setText(String.format(Locale.getDefault(), "총 이동 거리 %f m", totalDistance)));
 
-            trackingService.getTopSpeedLiveData().observe(trackingService, topSpeed ->
-                    binding.fragmentHomeTopSpeedTextView
-                            .setText(String.format(Locale.getDefault(), "최고 속력 %f km/h", topSpeed)));
-
-            trackingService.getCurrentSpeedLiveData().observe(trackingService, currentSpeed ->
-                    binding.fragmentHomeCurrentSpeedTextView
-                            .setText(String.format(Locale.getDefault(), "현재 속력 %f km/h", currentSpeed)));
-
             trackingService.getAverageSpeedMutableLiveData().observe(trackingService, averageSpeed ->
                     binding.fragmentHomeAverageSpeedTextView
                             .setText(String.format(Locale.getDefault(), "평균 속력 %f km/h", averageSpeed)));

@@ -100,14 +100,6 @@ public class TrackingService extends LifecycleService {
         return locationRepository.getTotalDistanceLiveData();
     }
 
-    public LiveData<Float> getTopSpeedLiveData() {
-        return locationRepository.getTopSpeedLiveData();
-    }
-
-    public LiveData<Float> getCurrentSpeedLiveData() {
-        return locationRepository.getCurrentSpeedLiveData();
-    }
-
     public LiveData<Float> getAverageSpeedMutableLiveData() {
         return locationRepository.getAverageSpeedMutableLiveData();
     }

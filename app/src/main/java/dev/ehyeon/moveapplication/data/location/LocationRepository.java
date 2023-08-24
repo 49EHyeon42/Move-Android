@@ -22,7 +22,7 @@ import dev.ehyeon.moveapplication.data.ContextRepository;
 
 public class LocationRepository implements ContextRepository {
 
-    private static final long INTERVAL_MILLIS = 1000;
+    private static final long INTERVAL_MILLIS = 3000;
 
     private final MutableLiveData<LatLng> currentLatLngMutableLiveData;
 
@@ -31,10 +31,6 @@ public class LocationRepository implements ContextRepository {
 
     private Location previousLocation;
     private final MutableLiveData<Float> totalDistanceMutableLiveData;
-
-    private final MutableLiveData<Float> topSpeedMutableLiveData;
-
-    private final MutableLiveData<Float> currentSpeedMutableLiveData;
 
     private final MutableLiveData<Float> averageSpeedMutableLiveData;
 
@@ -53,10 +49,6 @@ public class LocationRepository implements ContextRepository {
         latLngListMutableLiveData = new MutableLiveData<>(latLngList);
 
         totalDistanceMutableLiveData = new MutableLiveData<>();
-
-        currentSpeedMutableLiveData = new MutableLiveData<>();
-
-        topSpeedMutableLiveData = new MutableLiveData<>();
 
         averageSpeedMutableLiveData = new MutableLiveData<>();
 
@@ -102,14 +94,7 @@ public class LocationRepository implements ContextRepository {
 
                     // Speed
                     float currentSpeed = roundToN(3, meterPerSecondToKilometerPerHour(location.getSpeed()));
-                    float previousMaxSpeed = topSpeedMutableLiveData.getValue() == null ? 0f : topSpeedMutableLiveData.getValue();
                     float previousAverageSpeed = averageSpeedMutableLiveData.getValue() == null ? 0f : averageSpeedMutableLiveData.getValue();
-
-                    if (currentSpeed > previousMaxSpeed) {
-                        topSpeedMutableLiveData.setValue(currentSpeed);
-                    }
-
-                    currentSpeedMutableLiveData.setValue(currentSpeed);
 
                     averageSpeedMutableLiveData.setValue(
                             previousAverageSpeed == 0f ? currentSpeed : roundToN(3, (currentSpeed + previousAverageSpeed) / 2));
@@ -148,14 +133,6 @@ public class LocationRepository implements ContextRepository {
 
     public LiveData<Float> getTotalDistanceLiveData() {
         return totalDistanceMutableLiveData;
-    }
-
-    public LiveData<Float> getTopSpeedLiveData() {
-        return topSpeedMutableLiveData;
-    }
-
-    public LiveData<Float> getCurrentSpeedLiveData() {
-        return currentSpeedMutableLiveData;
     }
 
     public LiveData<Float> getAverageSpeedMutableLiveData() {
