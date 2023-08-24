@@ -131,7 +131,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // TODO change
         trackingServiceMutableLiveData.observe(getViewLifecycleOwner(), trackingService -> {
             if (trackingService == null) {
                 return;
@@ -143,14 +142,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
             trackingService.getTotalDistanceLiveData().observe(trackingService, totalDistance ->
                     binding.fragmentHomeTotalDistanceTextView
-                            .setText(String.format(Locale.getDefault(), "총 이동 거리 %f m", totalDistance)));
+                            .setText(String.format(Locale.getDefault(), "총 이동 거리 %.0f m", totalDistance)));
 
             trackingService.getAverageSpeedMutableLiveData().observe(trackingService, averageSpeed ->
                     binding.fragmentHomeAverageSpeedTextView
-                            .setText(String.format(Locale.getDefault(), "평균 속력 %f km/h", averageSpeed)));
+                            .setText(String.format(Locale.getDefault(), "평균 속력 %.1f km/h", averageSpeed)));
 
             trackingService.getStepLiveData().observe(trackingService, step ->
-                    binding.fragmentHomeStepTextView.setText(String.format(Locale.getDefault(), "걸음 수 %d", step)));
+                    binding.fragmentHomeStepTextView.setText(String.format(Locale.getDefault(), "걸음 수 %,d", step)));
         });
     }
 

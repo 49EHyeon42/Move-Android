@@ -86,18 +86,17 @@ public class LocationRepository implements ContextRepository {
                     // distance
                     if (previousLocation != null) {
                         totalDistanceMutableLiveData.setValue(
-                                totalDistanceMutableLiveData.getValue() == null ? 0f :
-                                        roundToN(1, totalDistanceMutableLiveData.getValue() + previousLocation.distanceTo(location)));
+                                totalDistanceMutableLiveData.getValue() == null ? 0 :
+                                        totalDistanceMutableLiveData.getValue() + previousLocation.distanceTo(location));
                     }
 
                     previousLocation = location;
 
                     // Speed
-                    float currentSpeed = roundToN(3, meterPerSecondToKilometerPerHour(location.getSpeed()));
-                    float previousAverageSpeed = averageSpeedMutableLiveData.getValue() == null ? 0f : averageSpeedMutableLiveData.getValue();
+                    float currentSpeed = meterPerSecondToKilometerPerHour(location.getSpeed());
+                    float previousAverageSpeed = averageSpeedMutableLiveData.getValue() == null ? 0 : averageSpeedMutableLiveData.getValue();
 
-                    averageSpeedMutableLiveData.setValue(
-                            previousAverageSpeed == 0f ? currentSpeed : roundToN(3, (currentSpeed + previousAverageSpeed) / 2));
+                    averageSpeedMutableLiveData.setValue(previousAverageSpeed == 0 ? currentSpeed : (currentSpeed + previousAverageSpeed) / 2);
 
                     speedList.add(currentSpeed);
                     speedListMutableLiveData.setValue(speedList);
@@ -144,11 +143,6 @@ public class LocationRepository implements ContextRepository {
     }
 
     private float meterPerSecondToKilometerPerHour(float f) {
-        return (float) (f * 3.6);
-    }
-
-    private float roundToN(int n, float f) {
-        float pow = (float) Math.pow(10, n);
-        return Math.round(f * pow) / pow;
+        return f * 3.6f;
     }
 }
