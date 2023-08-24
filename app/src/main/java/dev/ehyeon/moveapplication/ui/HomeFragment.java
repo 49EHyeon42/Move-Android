@@ -128,6 +128,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 return;
             }
 
+            trackingService.getSecondLiveData().observe(trackingService, second ->
+                    binding.fragmentHomeTimeTextView
+                            .setText(String.format(Locale.getDefault(), "%02d:%02d:%02d", second / 3600, (second % 3600) / 60, second % 60)));
+
             trackingService.getStep().observe(trackingService, step ->
                     binding.fragmentHomeStepTextView.setText(String.format(Locale.getDefault(), "%d", step)));
         });

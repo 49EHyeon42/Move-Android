@@ -20,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.MoveApplication;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.data.step.StepRepository;
+import dev.ehyeon.moveapplication.data.stopwatch.StopwatchRepository;
 
 @AndroidEntryPoint
 public class TrackingService extends LifecycleService {
@@ -34,6 +35,9 @@ public class TrackingService extends LifecycleService {
             }
         }
     };
+
+    @Inject
+    protected StopwatchRepository stopwatchRepository;
 
     @Inject
     protected StepRepository stepRepository;
@@ -60,6 +64,7 @@ public class TrackingService extends LifecycleService {
 
         startForeground(1, buildNotification());
 
+        stopwatchRepository.startStopwatch();
         stepRepository.startSensor();
 
         return START_NOT_STICKY;
@@ -81,6 +86,11 @@ public class TrackingService extends LifecycleService {
         return new TrackingServiceBinder(this);
     }
 
+    public LiveData<Integer> getSecondLiveData() {
+        return stopwatchRepository.getSecondLiveData();
+    }
+
+    // TODO rename
     public LiveData<Integer> getStep() {
         return stepRepository.getStep();
     }
@@ -100,6 +110,7 @@ public class TrackingService extends LifecycleService {
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
 
+        stopwatchRepository.stopStopwatch();
         stepRepository.stopSensor();
     }
 }
