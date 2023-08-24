@@ -17,31 +17,31 @@
             android:id="@+id/fragmentHome_timeTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="경과 시간" />
+            android:text="경과 시간 00:00:00" />
 
         <TextView
             android:id="@+id/fragmentHome_totalDistanceTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="총 이동 거리" />
+            android:text="총 이동 거리 0 m" />
 
         <TextView
             android:id="@+id/fragmentHome_averageSpeedTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="평균 속력" />
+            android:text="평균 속력 0.0 km/h" />
 
         <TextView
             android:id="@+id/fragmentHome_stepTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="걸음 수" />
+            android:text="걸음 수 0" />
 
         <TextView
             android:id="@+id/fragmentHome_calorieTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="칼로리 소모량" />
+            android:text="칼로리 소모량 0 cal" />
 
         <Button
             android:id="@+id/fragmentHome_trackingServiceButton"
