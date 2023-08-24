@@ -1,6 +1,7 @@
 package dev.ehyeon.moveapplication.data.location;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.location.Location;
 
 import androidx.annotation.NonNull;
@@ -11,19 +12,17 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocationRepository {
+import dev.ehyeon.moveapplication.data.ContextRepository;
+
+public class LocationRepository implements ContextRepository {
 
     private static final long INTERVAL_MILLIS = 1000;
-
-    private final FusedLocationProviderClient fusedLocationProviderClient;
-
-    private final LocationRequest locationRequest;
-    private final LocationCallback locationCallback;
 
     private final MutableLiveData<LatLng> currentLatLngMutableLiveData;
 
@@ -42,8 +41,39 @@ public class LocationRepository {
     private final List<Float> speedList;
     private final MutableLiveData<List<Float>> speedListMutableLiveData;
 
-    public LocationRepository(FusedLocationProviderClient fusedLocationProviderClient) {
-        this.fusedLocationProviderClient = fusedLocationProviderClient;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
+
+    public LocationRepository() {
+        currentLatLngMutableLiveData = new MutableLiveData<>();
+
+        latLngList = new ArrayList<>();
+        latLngListMutableLiveData = new MutableLiveData<>(latLngList);
+
+        totalDistanceMutableLiveData = new MutableLiveData<>();
+
+        currentSpeedMutableLiveData = new MutableLiveData<>();
+
+        topSpeedMutableLiveData = new MutableLiveData<>();
+
+        averageSpeedMutableLiveData = new MutableLiveData<>();
+
+        speedList = new ArrayList<>();
+        speedListMutableLiveData = new MutableLiveData<>(speedList);
+    }
+
+    public void initializeContext(Context context) {
+        if (context == null) {
+            fusedLocationProviderClient = null;
+
+            locationRequest = null;
+            locationCallback = null;
+            return;
+        }
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
 
         locationRequest = new LocationRequest.Builder(INTERVAL_MILLIS).build();
         locationCallback = new LocationCallback() {
@@ -89,32 +119,17 @@ public class LocationRepository {
                 }
             }
         };
-
-        currentLatLngMutableLiveData = new MutableLiveData<>();
-
-        latLngList = new ArrayList<>();
-        latLngListMutableLiveData = new MutableLiveData<>(latLngList);
-
-        totalDistanceMutableLiveData = new MutableLiveData<>();
-
-        currentSpeedMutableLiveData = new MutableLiveData<>();
-
-        topSpeedMutableLiveData = new MutableLiveData<>();
-
-        averageSpeedMutableLiveData = new MutableLiveData<>();
-
-        speedList = new ArrayList<>();
-        speedListMutableLiveData = new MutableLiveData<>(speedList);
     }
 
     @SuppressLint("MissingPermission")
-    public void startSensor() {
+    public void startLocationSensor() {
+        initAll();
+
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 
-    public void stopSensor() {
+    public void stopLocationSensor() {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-        initAll();
     }
 
     public void initAll() {

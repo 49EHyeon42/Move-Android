@@ -20,6 +20,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -118,6 +120,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
 
         googleMap.setMyLocationEnabled(true);
+
+        LocationServices.getFusedLocationProviderClient(requireContext())
+                .getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null)
+                .addOnSuccessListener(location ->
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 17)));
     }
 
     @Override
@@ -133,6 +140,22 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             trackingService.getSecondLiveData().observe(trackingService, second ->
                     binding.fragmentHomeTimeTextView
                             .setText(String.format(Locale.getDefault(), "%02d:%02d:%02d", second / 3600, (second % 3600) / 60, second % 60)));
+
+            trackingService.getTotalDistanceLiveData().observe(trackingService, totalDistance ->
+                    binding.fragmentHomeTotalDistanceTextView
+                            .setText(String.format(Locale.getDefault(), "%f", totalDistance)));
+
+            trackingService.getTopSpeedLiveData().observe(trackingService, topSpeed ->
+                    binding.fragmentHomeTopSpeedTextView
+                            .setText(String.format(Locale.getDefault(), "%f", topSpeed)));
+
+            trackingService.getCurrentSpeedLiveData().observe(trackingService, currentSpeed ->
+                    binding.fragmentHomeCurrentSpeedTextView
+                            .setText(String.format(Locale.getDefault(), "%f", currentSpeed)));
+
+            trackingService.getAverageSpeedMutableLiveData().observe(trackingService, averageSpeed ->
+                    binding.fragmentHomeAverageSpeedTextView
+                            .setText(String.format(Locale.getDefault(), "%f", averageSpeed)));
 
             trackingService.getStepLiveData().observe(trackingService, step ->
                     binding.fragmentHomeStepTextView.setText(String.format(Locale.getDefault(), "%d", step)));

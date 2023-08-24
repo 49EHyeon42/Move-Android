@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.MoveApplication;
 import dev.ehyeon.moveapplication.R;
+import dev.ehyeon.moveapplication.data.location.LocationRepository;
 import dev.ehyeon.moveapplication.data.step.StepRepository;
 import dev.ehyeon.moveapplication.data.stopwatch.StopwatchRepository;
 
@@ -40,6 +41,9 @@ public class TrackingService extends LifecycleService {
     protected StopwatchRepository stopwatchRepository;
 
     @Inject
+    protected LocationRepository locationRepository;
+
+    @Inject
     protected StepRepository stepRepository;
 
     @Override
@@ -53,6 +57,7 @@ public class TrackingService extends LifecycleService {
                 .registerReceiver(broadcastReceiver,
                         new IntentFilter(TrackingServiceAction.IS_TRACKING_SERVICE_RUNNING.getAction()));
 
+        locationRepository.initializeContext(this);
         stepRepository.initializeContext(this);
     }
 
@@ -65,6 +70,7 @@ public class TrackingService extends LifecycleService {
         startForeground(1, buildNotification());
 
         stopwatchRepository.startStopwatch();
+        locationRepository.startLocationSensor();
         stepRepository.startStepSensor();
 
         return START_NOT_STICKY;
@@ -90,6 +96,22 @@ public class TrackingService extends LifecycleService {
         return stopwatchRepository.getSecondLiveData();
     }
 
+    public LiveData<Float> getTotalDistanceLiveData() {
+        return locationRepository.getTotalDistanceLiveData();
+    }
+
+    public LiveData<Float> getTopSpeedLiveData() {
+        return locationRepository.getTopSpeedLiveData();
+    }
+
+    public LiveData<Float> getCurrentSpeedLiveData() {
+        return locationRepository.getCurrentSpeedLiveData();
+    }
+
+    public LiveData<Float> getAverageSpeedMutableLiveData() {
+        return locationRepository.getAverageSpeedMutableLiveData();
+    }
+
     public LiveData<Integer> getStepLiveData() {
         return stepRepository.getStepLiveData();
     }
@@ -110,6 +132,7 @@ public class TrackingService extends LifecycleService {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
 
         stopwatchRepository.stopStopwatch();
+        locationRepository.stopLocationSensor();
         stepRepository.stopStepSensor();
     }
 }

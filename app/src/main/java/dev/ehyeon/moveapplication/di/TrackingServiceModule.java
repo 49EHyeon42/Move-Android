@@ -4,6 +4,7 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.components.ServiceComponent;
+import dev.ehyeon.moveapplication.data.location.LocationRepository;
 import dev.ehyeon.moveapplication.data.step.StepRepository;
 import dev.ehyeon.moveapplication.data.stopwatch.StopwatchRepository;
 
@@ -14,6 +15,11 @@ public class TrackingServiceModule {
     @Provides
     public StopwatchRepository provideStopwatchRepository() {
         return new StopwatchRepository();
+    }
+
+    @Provides
+    public LocationRepository provideLocationRepository() {
+        return new LocationRepository();
     }
 
     @Provides

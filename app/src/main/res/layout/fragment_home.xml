@@ -26,10 +26,16 @@
             android:text="총 이동 거리" />
 
         <TextView
-            android:id="@+id/fragmentHome_maximumSpeedTextView"
+            android:id="@+id/fragmentHome_topSpeedTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="최고 속력" />
+
+        <TextView
+            android:id="@+id/fragmentHome_currentSpeedTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="현재 속력" />
 
         <TextView
             android:id="@+id/fragmentHome_averageSpeedTextView"
