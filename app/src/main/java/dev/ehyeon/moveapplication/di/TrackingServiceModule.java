@@ -5,6 +5,7 @@ import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.components.ServiceComponent;
 import dev.ehyeon.moveapplication.data.location.LocationRepository;
+import dev.ehyeon.moveapplication.data.step.SensorEventListener2Impl;
 import dev.ehyeon.moveapplication.data.step.StepRepository;
 import dev.ehyeon.moveapplication.data.stopwatch.StopwatchRepository;
 
@@ -23,7 +24,12 @@ public class TrackingServiceModule {
     }
 
     @Provides
-    public StepRepository provideStepRepository() {
-        return new StepRepository();
+    public SensorEventListener2Impl provideSensorEventListener2Impl() {
+        return new SensorEventListener2Impl();
+    }
+
+    @Provides
+    public StepRepository provideStepRepository(SensorEventListener2Impl sensorEventListener2Impl) {
+        return new StepRepository(sensorEventListener2Impl);
     }
 }

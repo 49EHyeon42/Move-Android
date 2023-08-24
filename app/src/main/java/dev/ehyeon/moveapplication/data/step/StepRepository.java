@@ -8,16 +8,19 @@ import android.hardware.SensorManager;
 
 import androidx.lifecycle.LiveData;
 
+import javax.inject.Inject;
+
 import dev.ehyeon.moveapplication.data.ContextRepository;
 
 public class StepRepository implements ContextRepository {
 
-    private final SensorEventListener2Impl sensorEventListener;
+    private final SensorEventListener2Impl sensorEventListener2Impl;
 
     private SensorManager sensorManager;
 
-    public StepRepository() {
-        sensorEventListener = new SensorEventListener2Impl();
+    @Inject
+    public StepRepository(SensorEventListener2Impl sensorEventListener2Impl) {
+        this.sensorEventListener2Impl = sensorEventListener2Impl;
     }
 
     @Override
@@ -35,9 +38,9 @@ public class StepRepository implements ContextRepository {
             return;
         }
 
-        sensorEventListener.initializeStep();
+        sensorEventListener2Impl.initializeStep();
 
-        sensorManager.registerListener(sensorEventListener, sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR), SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener2Impl, sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR), SENSOR_DELAY_NORMAL);
     }
 
     public void stopStepSensor() {
@@ -45,10 +48,10 @@ public class StepRepository implements ContextRepository {
             return;
         }
 
-        sensorManager.unregisterListener(sensorEventListener);
+        sensorManager.unregisterListener(sensorEventListener2Impl);
     }
 
     public LiveData<Integer> getStepLiveData() {
-        return sensorEventListener.getStepLiveData();
+        return sensorEventListener2Impl.getStepLiveData();
     }
 }
