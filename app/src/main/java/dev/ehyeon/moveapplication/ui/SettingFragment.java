@@ -1,4 +1,4 @@
-package dev.ehyeon.moveapplication;
+package dev.ehyeon.moveapplication.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import dev.ehyeon.moveapplication.R;
 
 public class SettingFragment extends Fragment {
 

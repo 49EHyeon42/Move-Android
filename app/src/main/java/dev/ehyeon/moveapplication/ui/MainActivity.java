@@ -1,4 +1,4 @@
-package dev.ehyeon.moveapplication;
+package dev.ehyeon.moveapplication.ui;
 
 import android.os.Bundle;
 
@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.databinding.ActivityMainBinding;
 
 @AndroidEntryPoint

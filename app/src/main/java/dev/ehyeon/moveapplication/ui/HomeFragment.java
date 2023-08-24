@@ -1,4 +1,4 @@
-package dev.ehyeon.moveapplication;
+package dev.ehyeon.moveapplication.ui;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -26,6 +26,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.databinding.FragmentHomeBinding;
 import dev.ehyeon.moveapplication.service.TrackingService;
 import dev.ehyeon.moveapplication.service.TrackingServiceAction;
