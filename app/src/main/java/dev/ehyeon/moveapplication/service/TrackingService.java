@@ -14,6 +14,10 @@ import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.LiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.List;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -94,6 +98,10 @@ public class TrackingService extends LifecycleService {
 
     public LiveData<Integer> getSecondLiveData() {
         return stopwatchRepository.getSecondLiveData();
+    }
+
+    public LiveData<List<LatLng>> getLatLngListLiveData() {
+        return locationRepository.getLatLngListLiveData();
     }
 
     public LiveData<Float> getTotalDistanceLiveData() {

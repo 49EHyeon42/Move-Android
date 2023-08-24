@@ -27,6 +27,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.Locale;
 
@@ -61,7 +63,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
     };
 
+    private FragmentHomeBinding binding;
+
     private MutableLiveData<TrackingService> trackingServiceMutableLiveData;
+
+    private Polyline googleMapPolyline;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,8 +84,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 .getInstance(requireContext())
                 .sendBroadcast(new Intent(TrackingServiceAction.IS_TRACKING_SERVICE_RUNNING.getAction()));
     }
-
-    private FragmentHomeBinding binding;
 
     @Nullable
     @Override
@@ -119,6 +123,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             return;
         }
 
+        googleMapPolyline = googleMap.addPolyline(new PolylineOptions());
+
         googleMap.setMyLocationEnabled(true);
 
         LocationServices.getFusedLocationProviderClient(requireContext())
@@ -139,6 +145,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             trackingService.getSecondLiveData().observe(trackingService, second ->
                     binding.fragmentHomeTimeTextView
                             .setText(String.format(Locale.getDefault(), "경과 시간 %02d:%02d:%02d", second / 3600, (second % 3600) / 60, second % 60)));
+
+            trackingService.getLatLngListLiveData().observe(trackingService, latLngs -> googleMapPolyline.setPoints(latLngs));
 
             trackingService.getTotalDistanceLiveData().observe(trackingService, totalDistance ->
                     binding.fragmentHomeTotalDistanceTextView
