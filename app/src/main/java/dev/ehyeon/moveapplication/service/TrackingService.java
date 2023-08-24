@@ -14,10 +14,14 @@ import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.LiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.MoveApplication;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.data.step.StepRepository;
 
+@AndroidEntryPoint
 public class TrackingService extends LifecycleService {
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -31,6 +35,9 @@ public class TrackingService extends LifecycleService {
         }
     };
 
+    @Inject
+    protected StepRepository stepRepository;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -41,6 +48,8 @@ public class TrackingService extends LifecycleService {
                 .getInstance(this)
                 .registerReceiver(broadcastReceiver,
                         new IntentFilter(TrackingServiceAction.IS_TRACKING_SERVICE_RUNNING.getAction()));
+
+        stepRepository.initializeContext(this);
     }
 
     @Override
@@ -50,6 +59,8 @@ public class TrackingService extends LifecycleService {
         Log.i("TAG", "onStartCommand: ");
 
         startForeground(1, buildNotification());
+
+        stepRepository.startSensor();
 
         return START_NOT_STICKY;
     }
@@ -62,16 +73,10 @@ public class TrackingService extends LifecycleService {
                 .build();
     }
 
-    private StepRepository stepRepository;
-
     @Nullable
     @Override
     public IBinder onBind(@NonNull Intent intent) {
         super.onBind(intent);
-
-        stepRepository = StepRepository.getInstance();
-        stepRepository.initializeContext(this);
-        stepRepository.startSensor();
 
         return new TrackingServiceBinder(this);
     }
