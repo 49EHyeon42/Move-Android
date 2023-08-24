@@ -11,7 +11,9 @@ import android.hardware.SensorManager;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-public class StepRepository implements SensorEventListener2 {
+import dev.ehyeon.moveapplication.data.ContextRepository;
+
+public class StepRepository implements ContextRepository, SensorEventListener2 {
 
     private final MutableLiveData<Integer> step;
 
@@ -21,6 +23,7 @@ public class StepRepository implements SensorEventListener2 {
         step = new MutableLiveData<>(0);
     }
 
+    @Override
     public void initializeContext(Context context) {
         if (context == null) {
             sensorManager = null;
