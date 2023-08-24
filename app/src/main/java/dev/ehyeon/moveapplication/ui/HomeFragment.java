@@ -59,11 +59,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
     };
 
-    private final MutableLiveData<TrackingService> trackingServiceMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<TrackingService> trackingServiceMutableLiveData;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        trackingServiceMutableLiveData = new MutableLiveData<>();
 
         LocalBroadcastManager
                 .getInstance(requireContext())
@@ -132,7 +134,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     binding.fragmentHomeTimeTextView
                             .setText(String.format(Locale.getDefault(), "%02d:%02d:%02d", second / 3600, (second % 3600) / 60, second % 60)));
 
-            trackingService.getStep().observe(trackingService, step ->
+            trackingService.getStepLiveData().observe(trackingService, step ->
                     binding.fragmentHomeStepTextView.setText(String.format(Locale.getDefault(), "%d", step)));
         });
     }

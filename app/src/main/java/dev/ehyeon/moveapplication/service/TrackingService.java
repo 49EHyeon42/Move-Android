@@ -65,7 +65,7 @@ public class TrackingService extends LifecycleService {
         startForeground(1, buildNotification());
 
         stopwatchRepository.startStopwatch();
-        stepRepository.startSensor();
+        stepRepository.startStepSensor();
 
         return START_NOT_STICKY;
     }
@@ -90,9 +90,8 @@ public class TrackingService extends LifecycleService {
         return stopwatchRepository.getSecondLiveData();
     }
 
-    // TODO rename
-    public LiveData<Integer> getStep() {
-        return stepRepository.getStep();
+    public LiveData<Integer> getStepLiveData() {
+        return stepRepository.getStepLiveData();
     }
 
     @Override
@@ -111,6 +110,6 @@ public class TrackingService extends LifecycleService {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
 
         stopwatchRepository.stopStopwatch();
-        stepRepository.stopSensor();
+        stepRepository.stopStepSensor();
     }
 }

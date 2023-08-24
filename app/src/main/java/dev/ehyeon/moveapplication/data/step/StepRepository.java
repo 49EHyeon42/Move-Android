@@ -15,12 +15,12 @@ import dev.ehyeon.moveapplication.data.ContextRepository;
 
 public class StepRepository implements ContextRepository, SensorEventListener2 {
 
-    private final MutableLiveData<Integer> step;
+    private final MutableLiveData<Integer> stepMutableLiveData;
 
     private SensorManager sensorManager;
 
     public StepRepository() {
-        step = new MutableLiveData<>(0);
+        stepMutableLiveData = new MutableLiveData<>(0);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class StepRepository implements ContextRepository, SensorEventListener2 {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
     }
 
-    public void startSensor() {
+    public void startStepSensor() {
         if (sensorManager == null) {
             return;
         }
@@ -43,7 +43,7 @@ public class StepRepository implements ContextRepository, SensorEventListener2 {
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR), SENSOR_DELAY_NORMAL);
     }
 
-    public void stopSensor() {
+    public void stopStepSensor() {
         if (sensorManager == null) {
             return;
         }
@@ -52,11 +52,11 @@ public class StepRepository implements ContextRepository, SensorEventListener2 {
     }
 
     public void initializeStep() {
-        step.setValue(0);
+        stepMutableLiveData.setValue(0);
     }
 
-    public LiveData<Integer> getStep() {
-        return step;
+    public LiveData<Integer> getStepLiveData() {
+        return stepMutableLiveData;
     }
 
     @Override
@@ -66,8 +66,8 @@ public class StepRepository implements ContextRepository, SensorEventListener2 {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (step.getValue() != null) {
-            step.setValue(step.getValue() + (int) event.values[0]);
+        if (stepMutableLiveData.getValue() != null) {
+            stepMutableLiveData.setValue(stepMutableLiveData.getValue() + (int) event.values[0]);
         }
     }
 

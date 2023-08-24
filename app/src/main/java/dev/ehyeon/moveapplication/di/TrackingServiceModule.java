@@ -12,7 +12,7 @@ import dev.ehyeon.moveapplication.data.stopwatch.StopwatchRepository;
 public class TrackingServiceModule {
 
     @Provides
-    public StopwatchRepository StopwatchRepository() {
+    public StopwatchRepository provideStopwatchRepository() {
         return new StopwatchRepository();
     }
 
