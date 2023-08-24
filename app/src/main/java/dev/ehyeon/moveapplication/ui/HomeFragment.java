@@ -26,6 +26,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.Locale;
+
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.databinding.FragmentHomeBinding;
 import dev.ehyeon.moveapplication.service.TrackingService;
@@ -121,8 +123,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
 
         // TODO change
-        trackingServiceMutableLiveData.observe(getViewLifecycleOwner(), trackingService ->
-                binding.fragmentHomeTimeTextView.setText(trackingService == null ? "Not Running" : "Running"));
+        trackingServiceMutableLiveData.observe(getViewLifecycleOwner(), trackingService -> {
+            if (trackingService == null) {
+                return;
+            }
+
+            trackingService.getStep().observe(trackingService, step ->
+                    binding.fragmentHomeStepTextView.setText(String.format(Locale.getDefault(), "%d", step)));
+        });
     }
 
     @Override

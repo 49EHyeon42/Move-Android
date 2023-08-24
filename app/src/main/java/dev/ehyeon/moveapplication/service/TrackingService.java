@@ -1,7 +1,6 @@
 package dev.ehyeon.moveapplication.service;
 
 import android.app.Notification;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,13 +8,17 @@ import android.content.IntentFilter;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleService;
+import androidx.lifecycle.LiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import dev.ehyeon.moveapplication.MoveApplication;
 import dev.ehyeon.moveapplication.R;
+import dev.ehyeon.moveapplication.data.step.StepRepository;
 
-public class TrackingService extends Service {
+public class TrackingService extends LifecycleService {
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
@@ -41,7 +44,9 @@ public class TrackingService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+
         Log.i("TAG", "onStartCommand: ");
 
         startForeground(1, buildNotification());
@@ -57,10 +62,22 @@ public class TrackingService extends Service {
                 .build();
     }
 
+    private StepRepository stepRepository;
+
     @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(@NonNull Intent intent) {
+        super.onBind(intent);
+
+        stepRepository = StepRepository.getInstance();
+        stepRepository.initializeContext(this);
+        stepRepository.startSensor();
+
         return new TrackingServiceBinder(this);
+    }
+
+    public LiveData<Integer> getStep() {
+        return stepRepository.getStep();
     }
 
     @Override
@@ -77,5 +94,7 @@ public class TrackingService extends Service {
         Log.i("TAG", "onDestroy: ");
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+
+        stepRepository.stopSensor();
     }
 }
