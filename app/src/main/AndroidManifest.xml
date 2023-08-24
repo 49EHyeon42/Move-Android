@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MoveApplication"
+        android:theme="@style/Theme.MoveApplication.SplashScreen"
         tools:targetApi="31">
 
         <!-- Add google maps API meta-data -->
