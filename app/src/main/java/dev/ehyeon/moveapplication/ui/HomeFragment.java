@@ -1,14 +1,11 @@
 package dev.ehyeon.moveapplication.ui;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.LocationServices;
@@ -32,48 +28,38 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.Locale;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.databinding.FragmentHomeBinding;
 import dev.ehyeon.moveapplication.service.TrackingService;
 import dev.ehyeon.moveapplication.service.TrackingServiceAction;
-import dev.ehyeon.moveapplication.service.TrackingServiceBinder;
+import dev.ehyeon.moveapplication.service.TrackingServiceConnection;
 
+@AndroidEntryPoint
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
+
+    @Inject
+    protected TrackingServiceConnection serviceConnection;
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(TrackingServiceAction.TRACKING_SERVICE_IS_RUNNING.getAction())) {
-                requireContext().bindService(new Intent(getActivity(), TrackingService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+                requireContext().bindService(new Intent(requireContext(), TrackingService.class), serviceConnection, Context.BIND_AUTO_CREATE);
             }
         }
     };
 
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            trackingServiceMutableLiveData.setValue(((TrackingServiceBinder) service).getTrackingService());
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            trackingServiceMutableLiveData.setValue(null);
-        }
-    };
-
     private FragmentHomeBinding binding;
-
-    private MutableLiveData<TrackingService> trackingServiceMutableLiveData;
 
     private Polyline googleMapPolyline;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        trackingServiceMutableLiveData = new MutableLiveData<>();
 
         LocalBroadcastManager
                 .getInstance(requireContext())
@@ -99,11 +85,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         binding.fragmentHomeTrackingServiceButton.setOnClickListener(ignored -> {
             Intent trackingServiceIntent = new Intent(requireContext(), TrackingService.class);
 
-            if (trackingServiceMutableLiveData.getValue() != null) {
+            if (serviceConnection.getTrackingServiceLiveData().getValue() != null) {
                 requireContext().unbindService(serviceConnection);
 
                 if (requireContext().stopService(trackingServiceIntent)) {
-                    trackingServiceMutableLiveData.setValue(null);
+                    serviceConnection.disconnectTrackingService();
                 }
             } else {
                 if (requireContext().startForegroundService(trackingServiceIntent) != null) {
@@ -141,7 +127,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        trackingServiceMutableLiveData.observe(getViewLifecycleOwner(), trackingService -> {
+        serviceConnection.getTrackingServiceLiveData().observe(getViewLifecycleOwner(), trackingService -> {
             if (trackingService == null) {
                 return;
             }
