@@ -130,7 +130,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         LocationServices.getFusedLocationProviderClient(requireContext())
                 .getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null)
                 .addOnSuccessListener(location ->
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 17)));
+                        googleMap.moveCamera(
+                                CameraUpdateFactory.newLatLngZoom(
+                                        location == null ?
+                                                new LatLng(37.5666612, 126.9783785) :
+                                                new LatLng(location.getLatitude(), location.getLongitude()), 17)));
     }
 
     @Override
