@@ -1,6 +1,5 @@
 package dev.ehyeon.moveapplication.ui;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -32,26 +31,20 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.R;
+import dev.ehyeon.moveapplication.broadcast.HomeFragmentBroadcastListener;
+import dev.ehyeon.moveapplication.broadcast.HomeFragmentBroadcastReceiver;
 import dev.ehyeon.moveapplication.databinding.FragmentHomeBinding;
 import dev.ehyeon.moveapplication.service.TrackingService;
 import dev.ehyeon.moveapplication.service.TrackingServiceAction;
 import dev.ehyeon.moveapplication.service.TrackingServiceConnection;
 
 @AndroidEntryPoint
-public class HomeFragment extends Fragment implements OnMapReadyCallback {
+public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeFragmentBroadcastListener {
 
     @Inject
     protected TrackingServiceConnection serviceConnection;
-
-    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(TrackingServiceAction.TRACKING_SERVICE_IS_RUNNING.getAction())) {
-                requireContext().bindService(new Intent(requireContext(), TrackingService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-            }
-        }
-    };
+    @Inject
+    protected HomeFragmentBroadcastReceiver broadcastReceiver;
 
     private FragmentHomeBinding binding;
 
@@ -69,6 +62,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         LocalBroadcastManager
                 .getInstance(requireContext())
                 .sendBroadcast(new Intent(TrackingServiceAction.IS_TRACKING_SERVICE_RUNNING.getAction()));
+    }
+
+    @Override
+    public void onBroadcastReceive() {
+        requireContext().bindService(new Intent(requireContext(), TrackingService.class), serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Nullable
