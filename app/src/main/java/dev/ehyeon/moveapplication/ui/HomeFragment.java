@@ -1,8 +1,6 @@
 package dev.ehyeon.moveapplication.ui;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
@@ -35,17 +33,17 @@ import dev.ehyeon.moveapplication.broadcast.HomeFragmentBroadcastListener;
 import dev.ehyeon.moveapplication.broadcast.HomeFragmentBroadcastReceiver;
 import dev.ehyeon.moveapplication.databinding.FragmentHomeBinding;
 import dev.ehyeon.moveapplication.service.TrackingService;
-import dev.ehyeon.moveapplication.service.TrackingServiceAction;
 import dev.ehyeon.moveapplication.service.TrackingServiceConnection;
 
 @AndroidEntryPoint
 public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeFragmentBroadcastListener {
 
     @Inject
-    protected TrackingServiceConnection serviceConnection;
-    @Inject
     protected HomeFragmentBroadcastReceiver broadcastReceiver;
+    @Inject
+    protected TrackingServiceConnection serviceConnection;
 
+    private HomeFragmentViewModel viewModel;
     private FragmentHomeBinding binding;
 
     private Polyline googleMapPolyline;
@@ -54,19 +52,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeFr
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LocalBroadcastManager
-                .getInstance(requireContext())
-                .registerReceiver(broadcastReceiver,
-                        new IntentFilter(TrackingServiceAction.TRACKING_SERVICE_IS_RUNNING.getAction()));
+        viewModel = new ViewModelProvider(this).get(HomeFragmentViewModel.class);
 
-        LocalBroadcastManager
-                .getInstance(requireContext())
-                .sendBroadcast(new Intent(TrackingServiceAction.IS_TRACKING_SERVICE_RUNNING.getAction()));
+        viewModel.onCreateWithContext(requireContext(), broadcastReceiver, serviceConnection);
     }
 
     @Override
     public void onBroadcastReceive() {
-        requireContext().bindService(new Intent(requireContext(), TrackingService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+        viewModel.bindService();
     }
 
     @Nullable
@@ -83,15 +76,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeFr
         binding.fragmentHomeTrackingServiceButton.setOnClickListener(ignored -> {
             Intent trackingServiceIntent = new Intent(requireContext(), TrackingService.class);
 
-            if (serviceConnection.getTrackingServiceLiveData().getValue() != null) {
-                requireContext().unbindService(serviceConnection);
+            if (viewModel.getTrackingServiceLiveData().getValue() != null) {
+                viewModel.unbindService();
 
                 if (requireContext().stopService(trackingServiceIntent)) {
-                    serviceConnection.disconnectTrackingService();
+                    viewModel.disconnectTrackingService();
                 }
             } else {
                 if (requireContext().startForegroundService(trackingServiceIntent) != null) {
-                    requireContext().bindService(trackingServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+                    viewModel.bindService();
                 }
             }
         });
@@ -125,7 +118,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeFr
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        serviceConnection.getTrackingServiceLiveData().observe(getViewLifecycleOwner(), trackingService -> {
+        // TODO refactor
+        viewModel.getTrackingServiceLiveData().observe(getViewLifecycleOwner(), trackingService -> {
             if (trackingService == null) {
                 return;
             }
@@ -153,6 +147,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeFr
     public void onDestroy() {
         super.onDestroy();
 
-        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(broadcastReceiver);
+        viewModel.onDestroyWithContext(requireContext());
     }
 }
