@@ -33,11 +33,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
+        // TODO refactor
         checkPermission();
 
+        // TODO refactor, 회전시 fragment 중복 문제 발생
         fragments = new HashMap<>();
         fragments.put(R.id.menu_home, new HomeFragment());
-        fragments.put(R.id.menu_profile, new SettingFragment());
+        fragments.put(R.id.menu_setting, new SettingFragment());
 
         binding.activityMainBottomNavigationView.setOnItemSelectedListener(item -> showFragment(item.getItemId()));
 
