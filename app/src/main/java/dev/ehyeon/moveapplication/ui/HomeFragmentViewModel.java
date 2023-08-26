@@ -9,16 +9,16 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import dev.ehyeon.moveapplication.broadcast.HomeFragmentBroadcastListener;
-import dev.ehyeon.moveapplication.broadcast.HomeFragmentBroadcastReceiver;
+import dev.ehyeon.moveapplication.broadcast.BaseBroadcastListener;
+import dev.ehyeon.moveapplication.broadcast.BaseBroadcastReceiver;
 import dev.ehyeon.moveapplication.service.TrackingService;
 import dev.ehyeon.moveapplication.service.TrackingServiceAction;
 import dev.ehyeon.moveapplication.service.TrackingServiceConnection;
 
-public class HomeFragmentViewModel extends ViewModel implements HomeFragmentBroadcastListener {
+public class HomeFragmentViewModel extends ViewModel implements BaseBroadcastListener {
 
     private Context context;
-    private final HomeFragmentBroadcastReceiver broadcastReceiver = new HomeFragmentBroadcastReceiver(this);
+    private final BaseBroadcastReceiver broadcastReceiver = new BaseBroadcastReceiver(this);
     private final TrackingServiceConnection serviceConnection = new TrackingServiceConnection();
 
     public void onCreateWithContext(@NonNull Context context) {
@@ -41,8 +41,10 @@ public class HomeFragmentViewModel extends ViewModel implements HomeFragmentBroa
     }
 
     @Override
-    public void onBroadcastReceive() {
-        bindService();
+    public void onBroadcastReceive(Context context, Intent intent) {
+        if (intent.getAction().equals(TrackingServiceAction.TRACKING_SERVICE_IS_RUNNING.getAction())) {
+            bindService();
+        }
     }
 
     public void bindService() {
