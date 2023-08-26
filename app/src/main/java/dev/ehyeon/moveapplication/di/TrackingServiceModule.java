@@ -4,10 +4,10 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.components.ServiceComponent;
-import dev.ehyeon.moveapplication.data.location.LocationRepository;
-import dev.ehyeon.moveapplication.data.step.SensorEventListener2Impl;
-import dev.ehyeon.moveapplication.data.step.StepRepository;
-import dev.ehyeon.moveapplication.data.stopwatch.StopwatchRepository;
+import dev.ehyeon.moveapplication.data.remote.location.LocationRepository;
+import dev.ehyeon.moveapplication.data.local.step.SensorEventListener2Impl;
+import dev.ehyeon.moveapplication.data.local.step.StepRepository;
+import dev.ehyeon.moveapplication.data.local.stopwatch.StopwatchRepository;
 
 @Module
 @InstallIn(ServiceComponent.class)

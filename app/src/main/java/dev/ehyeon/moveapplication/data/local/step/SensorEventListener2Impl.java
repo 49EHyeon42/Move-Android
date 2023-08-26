@@ -1,4 +1,4 @@
-package dev.ehyeon.moveapplication.data.step;
+package dev.ehyeon.moveapplication.data.local.step;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;

@@ -24,9 +24,9 @@ import dev.ehyeon.moveapplication.MoveApplication;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.broadcast.BaseBroadcastListener;
 import dev.ehyeon.moveapplication.broadcast.BaseBroadcastReceiver;
-import dev.ehyeon.moveapplication.data.location.LocationRepository;
-import dev.ehyeon.moveapplication.data.step.StepRepository;
-import dev.ehyeon.moveapplication.data.stopwatch.StopwatchRepository;
+import dev.ehyeon.moveapplication.data.remote.location.LocationRepository;
+import dev.ehyeon.moveapplication.data.local.step.StepRepository;
+import dev.ehyeon.moveapplication.data.local.stopwatch.StopwatchRepository;
 
 @AndroidEntryPoint
 public class TrackingService extends LifecycleService implements BaseBroadcastListener {

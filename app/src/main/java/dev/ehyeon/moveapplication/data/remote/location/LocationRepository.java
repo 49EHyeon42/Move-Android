@@ -1,4 +1,4 @@
-package dev.ehyeon.moveapplication.data.location;
+package dev.ehyeon.moveapplication.data.remote.location;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

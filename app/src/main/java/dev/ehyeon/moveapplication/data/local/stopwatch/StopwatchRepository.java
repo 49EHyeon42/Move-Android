@@ -1,4 +1,4 @@
-package dev.ehyeon.moveapplication.data.stopwatch;
+package dev.ehyeon.moveapplication.data.local.stopwatch;
 
 import android.os.Handler;
 
