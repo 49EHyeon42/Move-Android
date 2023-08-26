@@ -10,29 +10,43 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import dev.ehyeon.moveapplication.broadcast.HomeFragmentBroadcastListener;
 import dev.ehyeon.moveapplication.broadcast.HomeFragmentBroadcastReceiver;
 import dev.ehyeon.moveapplication.service.TrackingService;
 import dev.ehyeon.moveapplication.service.TrackingServiceAction;
 import dev.ehyeon.moveapplication.service.TrackingServiceConnection;
 
-public class HomeFragmentViewModel extends ViewModel {
+public class HomeFragmentViewModel extends ViewModel implements HomeFragmentBroadcastListener {
 
     private Context context;
     private HomeFragmentBroadcastReceiver broadcastReceiver;
     private TrackingServiceConnection serviceConnection;
 
-    public void onCreateWithContext(@NonNull Context context,
-                                    @NonNull HomeFragmentBroadcastReceiver broadcastReceiver,
-                                    @NonNull TrackingServiceConnection serviceConnection) {
+    public void onCreateWithContext(@NonNull Context context) {
         this.context = context;
-        this.broadcastReceiver = broadcastReceiver;
-        this.serviceConnection = serviceConnection;
+        // TODO refactor
+        this.broadcastReceiver = new HomeFragmentBroadcastReceiver(this);
+        this.serviceConnection = new TrackingServiceConnection();
 
         registerLocalBroadcastReceiver(context);
         sendBroadcastOfTrackingServiceStatus(context);
     }
 
+    private void checkBroadcastReceiverIsNull() {
+        if (broadcastReceiver == null) {
+            throw new NullPointerException("update broadcast receiver, broadcast receiver is null.");
+        }
+    }
+
+    private void checkServiceConnectionIsNull() {
+        if (serviceConnection == null) {
+            throw new NullPointerException("update service connection, server connection is null.");
+        }
+    }
+
     private void registerLocalBroadcastReceiver(Context context) {
+        checkBroadcastReceiverIsNull();
+
         LocalBroadcastManager
                 .getInstance(context)
                 .registerReceiver(broadcastReceiver, new IntentFilter(TrackingServiceAction.TRACKING_SERVICE_IS_RUNNING.getAction()));
@@ -44,10 +58,9 @@ public class HomeFragmentViewModel extends ViewModel {
                 .sendBroadcast(new Intent(TrackingServiceAction.IS_TRACKING_SERVICE_RUNNING.getAction()));
     }
 
-    private void checkServiceConnectionIsNull() {
-        if (serviceConnection == null) {
-            throw new NullPointerException("update service connection, server connection is null.");
-        }
+    @Override
+    public void onBroadcastReceive() {
+        bindService();
     }
 
     public void bindService() {
@@ -79,6 +92,8 @@ public class HomeFragmentViewModel extends ViewModel {
     }
 
     private void unregisterLocalBroadcastReceiver(Context context) {
+        checkBroadcastReceiverIsNull();
+
         LocalBroadcastManager.getInstance(context).unregisterReceiver(broadcastReceiver);
     }
 }
