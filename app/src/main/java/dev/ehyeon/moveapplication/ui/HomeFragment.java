@@ -107,11 +107,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 return;
             }
 
+            if (googleMapPolyline != null) {
+                trackingService.getLatLngListLiveData().observe(trackingService, latLngs -> googleMapPolyline.setPoints(latLngs));
+            }
+
             trackingService.getSecondLiveData().observe(trackingService, second ->
                     binding.fragmentHomeTimeTextView
                             .setText(String.format(Locale.getDefault(), "경과 시간 %02d:%02d:%02d", second / 3600, (second % 3600) / 60, second % 60)));
-
-            trackingService.getLatLngListLiveData().observe(trackingService, latLngs -> googleMapPolyline.setPoints(latLngs));
 
             trackingService.getTotalDistanceLiveData().observe(trackingService, totalDistance ->
                     binding.fragmentHomeTotalDistanceTextView
@@ -129,6 +131,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        viewModel.unbindService();
 
         viewModel.onDestroyWithContext(requireContext());
     }

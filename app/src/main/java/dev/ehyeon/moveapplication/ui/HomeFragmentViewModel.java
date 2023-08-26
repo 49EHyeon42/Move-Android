@@ -52,7 +52,9 @@ public class HomeFragmentViewModel extends ViewModel implements BaseBroadcastLis
     }
 
     public void unbindService() {
-        context.unbindService(serviceConnection);
+        if (serviceConnection.getTrackingServiceLiveData().getValue() != null) {
+            context.unbindService(serviceConnection);
+        }
     }
 
     public void disconnectTrackingService() {

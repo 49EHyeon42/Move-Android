@@ -14,17 +14,12 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.databinding.ActivityMainBinding;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
-
-    private Map<Integer, Fragment> fragments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,14 +31,15 @@ public class MainActivity extends AppCompatActivity {
         // TODO refactor
         checkPermission();
 
-        // TODO refactor, 회전시 fragment 중복 문제 발생
-        fragments = new HashMap<>();
-        fragments.put(R.id.menu_home, new HomeFragment());
-        fragments.put(R.id.menu_setting, new SettingFragment());
+        binding.activityMainBottomNavigationView.setOnItemSelectedListener(item -> changeFragment(item.getItemId()));
 
-        binding.activityMainBottomNavigationView.setOnItemSelectedListener(item -> showFragment(item.getItemId()));
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.activityMain_frameLayout);
 
-        showFragment(R.id.menu_home);
+        if (currentFragment == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.activityMain_frameLayout, new HomeFragment(), "homeFragment")
+                    .commit();
+        }
     }
 
     private void checkPermission() {
@@ -76,29 +72,47 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private boolean showFragment(int itemId) {
-        for (int id : fragments.keySet()) {
-            Fragment fragment = fragments.get(id);
+    private boolean changeFragment(int itemId) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
-            if (fragment == null) {
-                return false;
-            }
-
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
-            if (itemId == id) {
-                if (!fragment.isAdded()) {
-                    fragmentTransaction.add(R.id.activityMain_frameLayout, fragment);
-                }
-
-                fragmentTransaction.show(fragment);
-            } else {
-                fragmentTransaction.hide(fragment);
-            }
-
-            fragmentTransaction.commit();
+        if (itemId == R.id.menu_home) {
+            showFragment(fragmentTransaction, "homeFragment");
+            hideFragment(fragmentTransaction, "settingFragment");
+        } else if (itemId == R.id.menu_setting) {
+            showFragment(fragmentTransaction, "settingFragment");
+            hideFragment(fragmentTransaction, "homeFragment");
         }
 
+        fragmentTransaction.commit();
+
         return true;
+    }
+
+    private void showFragment(FragmentTransaction fragmentTransaction, String fragmentTag) {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(fragmentTag);
+
+        if (fragment == null) {
+            if (fragmentTag.equals("homeFragment")) {
+                fragment = new HomeFragment();
+            } else { // fragmentTag.equals("settingFragment")
+                fragment = new SettingFragment();
+            }
+        }
+
+        if (!fragment.isAdded()) {
+            fragmentTransaction.add(R.id.activityMain_frameLayout, fragment, fragmentTag);
+        }
+
+        fragmentTransaction.show(fragment);
+    }
+
+    private void hideFragment(FragmentTransaction fragmentTransaction, String fragmentTag) {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(fragmentTag);
+
+        if (fragment == null) {
+            return;
+        }
+
+        fragmentTransaction.hide(fragment);
     }
 }
