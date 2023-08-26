@@ -2,7 +2,6 @@ package dev.ehyeon.moveapplication.service;
 
 import android.app.Notification;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
@@ -23,23 +22,22 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.MoveApplication;
 import dev.ehyeon.moveapplication.R;
+import dev.ehyeon.moveapplication.broadcast.TrackingServiceBroadcastListener;
+import dev.ehyeon.moveapplication.broadcast.TrackingServiceBroadcastReceiver;
 import dev.ehyeon.moveapplication.data.location.LocationRepository;
 import dev.ehyeon.moveapplication.data.step.StepRepository;
 import dev.ehyeon.moveapplication.data.stopwatch.StopwatchRepository;
 
 @AndroidEntryPoint
-public class TrackingService extends LifecycleService {
+public class TrackingService extends LifecycleService implements TrackingServiceBroadcastListener {
 
-    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver broadcastReceiver = new TrackingServiceBroadcastReceiver(this);
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(TrackingServiceAction.IS_TRACKING_SERVICE_RUNNING.getAction())) {
-                Intent responseIntent = new Intent(TrackingServiceAction.TRACKING_SERVICE_IS_RUNNING.getAction());
-                LocalBroadcastManager.getInstance(TrackingService.this).sendBroadcast(responseIntent);
-            }
-        }
-    };
+    @Override
+    public void onBroadcastReceive() {
+        Intent responseIntent = new Intent(TrackingServiceAction.TRACKING_SERVICE_IS_RUNNING.getAction());
+        LocalBroadcastManager.getInstance(TrackingService.this).sendBroadcast(responseIntent);
+    }
 
     @Inject
     protected StopwatchRepository stopwatchRepository;
