@@ -6,15 +6,12 @@ import android.os.IBinder;
 
 import androidx.lifecycle.MutableLiveData;
 
-import javax.inject.Inject;
-
 public class TrackingServiceConnection implements ServiceConnection {
 
     private final MutableLiveData<TrackingService> trackingServiceMutableLiveData;
 
-    @Inject
     public TrackingServiceConnection() {
-        trackingServiceMutableLiveData = new MutableLiveData<>(null);
+        trackingServiceMutableLiveData = new MutableLiveData<>();
     }
 
     @Override

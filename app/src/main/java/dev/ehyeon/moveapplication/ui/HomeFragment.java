@@ -25,9 +25,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.Locale;
 
-import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.broadcast.HomeFragmentBroadcastListener;
 import dev.ehyeon.moveapplication.broadcast.HomeFragmentBroadcastReceiver;
@@ -35,13 +32,7 @@ import dev.ehyeon.moveapplication.databinding.FragmentHomeBinding;
 import dev.ehyeon.moveapplication.service.TrackingService;
 import dev.ehyeon.moveapplication.service.TrackingServiceConnection;
 
-@AndroidEntryPoint
 public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeFragmentBroadcastListener {
-
-    @Inject
-    protected HomeFragmentBroadcastReceiver broadcastReceiver;
-    @Inject
-    protected TrackingServiceConnection serviceConnection;
 
     private HomeFragmentViewModel viewModel;
     private FragmentHomeBinding binding;
@@ -54,7 +45,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, HomeFr
 
         viewModel = new ViewModelProvider(this).get(HomeFragmentViewModel.class);
 
-        viewModel.onCreateWithContext(requireContext(), broadcastReceiver, serviceConnection);
+        viewModel.onCreateWithContext(requireContext(), new HomeFragmentBroadcastReceiver(this), new TrackingServiceConnection());
     }
 
     @Override
