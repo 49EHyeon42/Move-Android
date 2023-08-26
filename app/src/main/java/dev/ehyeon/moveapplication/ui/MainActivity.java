@@ -1,7 +1,13 @@
 package dev.ehyeon.moveapplication.ui;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.databinding.DataBindingUtil;
@@ -27,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
+        checkPermission();
+
         fragments = new HashMap<>();
         fragments.put(R.id.menu_home, new HomeFragment());
         fragments.put(R.id.menu_profile, new SettingFragment());
@@ -34,6 +42,36 @@ public class MainActivity extends AppCompatActivity {
         binding.activityMainBottomNavigationView.setOnItemSelectedListener(item -> showFragment(item.getItemId()));
 
         showFragment(R.id.menu_home);
+    }
+
+    private void checkPermission() {
+        registerForActivityResult(new ActivityResultContracts
+                        .RequestMultiplePermissions(), result -> {
+                    Boolean fineLocationGranted = result.getOrDefault(
+                            Manifest.permission.ACCESS_FINE_LOCATION, false);
+                    Boolean coarseLocationGranted = result.getOrDefault(
+                            Manifest.permission.ACCESS_COARSE_LOCATION, false);
+
+                    if (!((fineLocationGranted != null && fineLocationGranted) || (coarseLocationGranted != null && coarseLocationGranted))) {
+                        new AlertDialog.Builder(this)
+                                .setTitle("Request permission")
+                                .setMessage("Permission are required to use this application.")
+                                .setCancelable(false)
+                                .setPositiveButton("OK", (dialog, which) -> {
+                                    Intent intent = new Intent(
+                                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                            Uri.fromParts("package", getPackageName(), null));
+
+                                    startActivity(intent);
+
+                                    finish();
+                                }).create().show();
+                    }
+                }
+        ).launch(new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        });
     }
 
     private boolean showFragment(int itemId) {
