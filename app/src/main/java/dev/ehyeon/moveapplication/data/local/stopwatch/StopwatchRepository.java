@@ -3,7 +3,8 @@ package dev.ehyeon.moveapplication.data.local.stopwatch;
 import android.os.Handler;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+
+import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
 public class StopwatchRepository {
 
@@ -11,7 +12,7 @@ public class StopwatchRepository {
 
     private final Runnable runnable;
 
-    private final MutableLiveData<Integer> secondMutableLiveData;
+    private final NonNullMutableLiveData<Integer> secondNonNullMutableLiveData;
 
     public StopwatchRepository() {
         handler = new Handler();
@@ -20,17 +21,17 @@ public class StopwatchRepository {
 
             @Override
             public void run() {
-                secondMutableLiveData.setValue((secondMutableLiveData.getValue() == null ? 0 : secondMutableLiveData.getValue()) + 1);
+                secondNonNullMutableLiveData.setValue(secondNonNullMutableLiveData.getValue() + 1);
 
                 handler.postDelayed(this, 1000);
             }
         };
 
-        secondMutableLiveData = new MutableLiveData<>(0);
+        secondNonNullMutableLiveData = new NonNullMutableLiveData<>(0);
     }
 
     public void startStopwatch() {
-        secondMutableLiveData.setValue(0);
+        initializeSecond();
 
         handler.post(runnable);
     }
@@ -39,7 +40,11 @@ public class StopwatchRepository {
         handler.removeCallbacks(runnable);
     }
 
+    private void initializeSecond() {
+        secondNonNullMutableLiveData.setValue(0);
+    }
+
     public LiveData<Integer> getSecondLiveData() {
-        return secondMutableLiveData;
+        return secondNonNullMutableLiveData;
     }
 }
