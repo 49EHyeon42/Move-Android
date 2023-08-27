@@ -59,7 +59,6 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
                         new IntentFilter(TrackingServiceAction.IS_TRACKING_SERVICE_RUNNING.getAction()));
 
         locationRepository.initializeContext(this);
-        stepRepository.initializeContext(this);
     }
 
     @Override
@@ -80,7 +79,7 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
 
         stopwatchRepository.startStopwatch();
         locationRepository.startLocationSensor();
-        stepRepository.startStepSensor();
+        stepRepository.startStepSensor(this);
 
         return START_NOT_STICKY;
     }
@@ -152,6 +151,6 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
 
         stopwatchRepository.stopStopwatch();
         locationRepository.stopLocationSensor();
-        stepRepository.stopStepSensor();
+        stepRepository.stopStepSensor(this);
     }
 }
