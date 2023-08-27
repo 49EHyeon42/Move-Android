@@ -5,14 +5,15 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener2;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+
+import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
 public class SensorEventListener2Impl implements SensorEventListener2 {
 
-    private final MutableLiveData<Integer> stepMutableLiveData;
+    private final NonNullMutableLiveData<Integer> stepNonNullMutableLiveData;
 
     public SensorEventListener2Impl() {
-        this.stepMutableLiveData = new MutableLiveData<>(0);
+        this.stepNonNullMutableLiveData = new NonNullMutableLiveData<>(0);
     }
 
     @Override
@@ -22,9 +23,7 @@ public class SensorEventListener2Impl implements SensorEventListener2 {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (stepMutableLiveData.getValue() != null) {
-            stepMutableLiveData.setValue(stepMutableLiveData.getValue() + (int) event.values[0]);
-        }
+        stepNonNullMutableLiveData.setValue(stepNonNullMutableLiveData.getValue() + 1);
     }
 
     @Override
@@ -33,10 +32,10 @@ public class SensorEventListener2Impl implements SensorEventListener2 {
     }
 
     public void initializeStep() {
-        stepMutableLiveData.setValue(0);
+        stepNonNullMutableLiveData.setValue(0);
     }
 
     public LiveData<Integer> getStepLiveData() {
-        return stepMutableLiveData;
+        return stepNonNullMutableLiveData;
     }
 }
