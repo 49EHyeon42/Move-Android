@@ -42,7 +42,7 @@
             android:id="@+id/fragmentHome_calorieTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="칼로리 소모량 0 cal" />
+            android:text="칼로리 소모량 0 kcal" />
 
         <Button
             android:id="@+id/fragmentHome_trackingServiceButton"

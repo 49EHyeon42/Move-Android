@@ -20,6 +20,7 @@ import java.util.List;
 
 import dev.ehyeon.moveapplication.data.ContextRepository;
 
+// TODO refactor
 public class LocationRepository implements ContextRepository {
 
     private static final long INTERVAL_MILLIS = 3000;
@@ -36,6 +37,8 @@ public class LocationRepository implements ContextRepository {
 
     private final List<Float> speedList;
     private final MutableLiveData<List<Float>> speedListMutableLiveData;
+
+    private final MutableLiveData<Float> calorieConsumptionMutableLiveData;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -54,6 +57,8 @@ public class LocationRepository implements ContextRepository {
 
         speedList = new ArrayList<>();
         speedListMutableLiveData = new MutableLiveData<>(speedList);
+
+        calorieConsumptionMutableLiveData = new MutableLiveData<>();
     }
 
     public void initializeContext(Context context) {
@@ -93,13 +98,18 @@ public class LocationRepository implements ContextRepository {
                     previousLocation = location;
 
                     // Speed
-                    float currentSpeed = meterPerSecondToKilometerPerHour(location.getSpeed());
+                    float currentSpeedPerSecond = location.getSpeed();
+                    float currentSpeed = meterPerSecondToKilometerPerHour(currentSpeedPerSecond);
                     float previousAverageSpeed = averageSpeedMutableLiveData.getValue() == null ? 0 : averageSpeedMutableLiveData.getValue();
 
                     averageSpeedMutableLiveData.setValue(previousAverageSpeed == 0 ? currentSpeed : (currentSpeed + previousAverageSpeed) / 2);
 
                     speedList.add(currentSpeed);
                     speedListMutableLiveData.setValue(speedList);
+
+                    calorieConsumptionMutableLiveData.setValue(
+                            calorieConsumptionMutableLiveData.getValue() == null ? 0 :
+                                    calorieConsumptionMutableLiveData.getValue() + getCaloriePerSecond(currentSpeedPerSecond));
                 }
             }
         };
@@ -144,5 +154,47 @@ public class LocationRepository implements ContextRepository {
 
     private float meterPerSecondToKilometerPerHour(float f) {
         return f * 3.6f;
+    }
+
+    public LiveData<Float> getCalorieConsumptionLiveData() {
+        return calorieConsumptionMutableLiveData;
+    }
+
+    private float getCaloriePerSecond(float speed) {
+        // 1분당 MET * 1분당 산소 섭취(3.5ml) * 몸무게(65 가정) / 1000 * 5
+        return getMetPerSecond(speed) * 0.058f * 65 / 200;
+    }
+
+    private float getMetPerSecond(float speed) {
+        if (speed < 0) {
+            return 0;
+        } else if (speed <= 3) {
+            return 0.833f;
+        } else if (speed <= 4) {
+            return 1.111f;
+        } else if (speed <= 5) {
+            return 1.389f;
+        } else if (speed <= 6) {
+            return 1.667f;
+        } else if (speed <= 7) {
+            return 1.944f;
+        } else if (speed <= 8) {
+            return 2.222f;
+        } else if (speed <= 9) {
+            return 2.5f;
+        } else if (speed <= 10) {
+            return 2.778f;
+        } else if (speed <= 11) {
+            return 3.056f;
+        } else if (speed <= 12) {
+            return 3.333f;
+        } else if (speed <= 13) {
+            return 3.611f;
+        } else if (speed <= 14) {
+            return 3.889f;
+        } else if (speed <= 15) {
+            return 4.167f;
+        }
+        return 4.5f;
     }
 }

@@ -114,6 +114,10 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
         return stepRepository.getStepLiveData();
     }
 
+    public LiveData<Float> getCalorieConsumptionLiveData() {
+        return locationRepository.getCalorieConsumptionLiveData();
+    }
+
     @Override
     public boolean onUnbind(Intent intent) {
         Log.i("TAG", "onUnbind: ");
