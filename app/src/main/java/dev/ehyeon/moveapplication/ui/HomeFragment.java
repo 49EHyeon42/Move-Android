@@ -119,7 +119,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     binding.fragmentHomeTotalDistanceTextView
                             .setText(String.format(Locale.getDefault(), "총 이동 거리 %.0f m", totalDistance)));
 
-            trackingService.getAverageSpeedMutableLiveData().observe(trackingService, averageSpeed ->
+            trackingService.getAverageSpeedLiveData().observe(trackingService, averageSpeed ->
                     binding.fragmentHomeAverageSpeedTextView
                             .setText(String.format(Locale.getDefault(), "평균 속력 %.1f km/h", averageSpeed)));
 

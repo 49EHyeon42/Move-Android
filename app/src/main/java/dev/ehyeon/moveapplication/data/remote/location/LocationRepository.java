@@ -6,7 +6,6 @@ import android.location.Location;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -18,27 +17,25 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.ehyeon.moveapplication.data.ContextRepository;
+import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
 // TODO refactor
-public class LocationRepository implements ContextRepository {
+public class LocationRepository {
 
-    private static final long INTERVAL_MILLIS = 3000;
-
-    private final MutableLiveData<LatLng> currentLatLngMutableLiveData;
+    private static final long INTERVAL_MILLIS = 1000;
 
     private final List<LatLng> latLngList;
-    private final MutableLiveData<List<LatLng>> latLngListMutableLiveData;
+    private final NonNullMutableLiveData<List<LatLng>> latLngListNonNullMutableLiveData;
 
     private Location previousLocation;
-    private final MutableLiveData<Float> totalDistanceMutableLiveData;
+    private final NonNullMutableLiveData<Float> totalDistanceNonNullMutableLiveData;
 
-    private final MutableLiveData<Float> averageSpeedMutableLiveData;
+    private final NonNullMutableLiveData<Float> averageSpeedNonNullMutableLiveData;
 
     private final List<Float> speedList;
-    private final MutableLiveData<List<Float>> speedListMutableLiveData;
+    private final NonNullMutableLiveData<List<Float>> speedListNonNullMutableLiveData;
 
-    private final MutableLiveData<Float> calorieConsumptionMutableLiveData;
+    private final NonNullMutableLiveData<Float> calorieConsumptionNonNullMutableLiveData;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -46,19 +43,17 @@ public class LocationRepository implements ContextRepository {
     private LocationCallback locationCallback;
 
     public LocationRepository() {
-        currentLatLngMutableLiveData = new MutableLiveData<>();
-
         latLngList = new ArrayList<>();
-        latLngListMutableLiveData = new MutableLiveData<>(latLngList);
+        latLngListNonNullMutableLiveData = new NonNullMutableLiveData<>(latLngList);
 
-        totalDistanceMutableLiveData = new MutableLiveData<>();
+        totalDistanceNonNullMutableLiveData = new NonNullMutableLiveData<>(0f);
 
-        averageSpeedMutableLiveData = new MutableLiveData<>();
+        averageSpeedNonNullMutableLiveData = new NonNullMutableLiveData<>(0f);
 
         speedList = new ArrayList<>();
-        speedListMutableLiveData = new MutableLiveData<>(speedList);
+        speedListNonNullMutableLiveData = new NonNullMutableLiveData<>(speedList);
 
-        calorieConsumptionMutableLiveData = new MutableLiveData<>();
+        calorieConsumptionNonNullMutableLiveData = new NonNullMutableLiveData<>(0f);
     }
 
     public void initializeContext(Context context) {
@@ -80,19 +75,15 @@ public class LocationRepository implements ContextRepository {
                 Location location = locationResult.getLastLocation();
 
                 if (location != null) {
-                    // latitude, longitude
                     LatLng newLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                    currentLatLngMutableLiveData.setValue(newLatLng);
-
                     latLngList.add(newLatLng);
-                    latLngListMutableLiveData.setValue(latLngList);
+                    latLngListNonNullMutableLiveData.setValue(latLngList);
 
                     // distance
                     if (previousLocation != null) {
-                        totalDistanceMutableLiveData.setValue(
-                                totalDistanceMutableLiveData.getValue() == null ? 0 :
-                                        totalDistanceMutableLiveData.getValue() + previousLocation.distanceTo(location));
+                        totalDistanceNonNullMutableLiveData.setValue(
+                                totalDistanceNonNullMutableLiveData.getValue() + previousLocation.distanceTo(location));
                     }
 
                     previousLocation = location;
@@ -100,16 +91,15 @@ public class LocationRepository implements ContextRepository {
                     // Speed
                     float currentSpeedPerSecond = location.getSpeed();
                     float currentSpeed = meterPerSecondToKilometerPerHour(currentSpeedPerSecond);
-                    float previousAverageSpeed = averageSpeedMutableLiveData.getValue() == null ? 0 : averageSpeedMutableLiveData.getValue();
+                    float previousAverageSpeed = averageSpeedNonNullMutableLiveData.getValue();
 
-                    averageSpeedMutableLiveData.setValue(previousAverageSpeed == 0 ? currentSpeed : (currentSpeed + previousAverageSpeed) / 2);
+                    averageSpeedNonNullMutableLiveData.setValue(previousAverageSpeed == 0 ? currentSpeed : (currentSpeed + previousAverageSpeed) / 2);
 
                     speedList.add(currentSpeed);
-                    speedListMutableLiveData.setValue(speedList);
+                    speedListNonNullMutableLiveData.setValue(speedList);
 
-                    calorieConsumptionMutableLiveData.setValue(
-                            calorieConsumptionMutableLiveData.getValue() == null ? 0 :
-                                    calorieConsumptionMutableLiveData.getValue() + getCaloriePerSecond(currentSpeedPerSecond));
+                    calorieConsumptionNonNullMutableLiveData.setValue(
+                            calorieConsumptionNonNullMutableLiveData.getValue() + getCaloriePerSecond(currentSpeedPerSecond));
                 }
             }
         };
@@ -132,24 +122,16 @@ public class LocationRepository implements ContextRepository {
         speedList.clear();
     }
 
-    public LiveData<LatLng> getCurrentLatLngLiveData() {
-        return currentLatLngMutableLiveData;
-    }
-
     public LiveData<List<LatLng>> getLatLngListLiveData() {
-        return latLngListMutableLiveData;
+        return latLngListNonNullMutableLiveData;
     }
 
     public LiveData<Float> getTotalDistanceLiveData() {
-        return totalDistanceMutableLiveData;
+        return totalDistanceNonNullMutableLiveData;
     }
 
-    public LiveData<Float> getAverageSpeedMutableLiveData() {
-        return averageSpeedMutableLiveData;
-    }
-
-    public LiveData<List<Float>> getSpeedListLiveData() {
-        return speedListMutableLiveData;
+    public LiveData<Float> getAverageSpeedLiveData() {
+        return averageSpeedNonNullMutableLiveData;
     }
 
     private float meterPerSecondToKilometerPerHour(float f) {
@@ -157,7 +139,7 @@ public class LocationRepository implements ContextRepository {
     }
 
     public LiveData<Float> getCalorieConsumptionLiveData() {
-        return calorieConsumptionMutableLiveData;
+        return calorieConsumptionNonNullMutableLiveData;
     }
 
     private float getCaloriePerSecond(float speed) {

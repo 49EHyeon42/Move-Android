@@ -112,8 +112,8 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
         return locationRepository.getTotalDistanceLiveData();
     }
 
-    public LiveData<Float> getAverageSpeedMutableLiveData() {
-        return locationRepository.getAverageSpeedMutableLiveData();
+    public LiveData<Float> getAverageSpeedLiveData() {
+        return locationRepository.getAverageSpeedLiveData();
     }
 
     public LiveData<Integer> getStepLiveData() {
@@ -132,7 +132,7 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
                 SystemClock.elapsedRealtime(),
                 Objects.requireNonNull(stopwatchRepository.getSecondLiveData().getValue()),
                 Objects.requireNonNull(locationRepository.getTotalDistanceLiveData().getValue()),
-                Objects.requireNonNull(locationRepository.getAverageSpeedMutableLiveData().getValue()),
+                Objects.requireNonNull(locationRepository.getAverageSpeedLiveData().getValue()),
                 Objects.requireNonNull(stepRepository.getStepLiveData().getValue()),
                 Objects.requireNonNull(locationRepository.getCalorieConsumptionLiveData().getValue())))).start();
 
