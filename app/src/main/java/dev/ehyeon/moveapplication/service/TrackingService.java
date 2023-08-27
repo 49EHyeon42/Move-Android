@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -24,12 +26,17 @@ import dev.ehyeon.moveapplication.MoveApplication;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.broadcast.BaseBroadcastListener;
 import dev.ehyeon.moveapplication.broadcast.BaseBroadcastReceiver;
-import dev.ehyeon.moveapplication.data.remote.location.LocationRepository;
+import dev.ehyeon.moveapplication.data.local.record.Record;
+import dev.ehyeon.moveapplication.data.local.record.RecordDao;
 import dev.ehyeon.moveapplication.data.local.step.StepRepository;
 import dev.ehyeon.moveapplication.data.local.stopwatch.StopwatchRepository;
+import dev.ehyeon.moveapplication.data.remote.location.LocationRepository;
 
 @AndroidEntryPoint
 public class TrackingService extends LifecycleService implements BaseBroadcastListener {
+
+    @Inject
+    protected RecordDao recordDao;
 
     @Inject
     protected StopwatchRepository stopwatchRepository;
@@ -121,6 +128,16 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
     @Override
     public boolean onUnbind(Intent intent) {
         Log.i("TAG", "onUnbind: ");
+
+        new Thread(() -> recordDao.insertRecord(new Record(
+                SystemClock.elapsedRealtime(),
+                Objects.requireNonNull(stopwatchRepository.getSecondLiveData().getValue()),
+                Objects.requireNonNull(locationRepository.getTotalDistanceLiveData().getValue()),
+                Objects.requireNonNull(locationRepository.getAverageSpeedMutableLiveData().getValue()),
+                Objects.requireNonNull(stepRepository.getStepLiveData().getValue()),
+                Objects.requireNonNull(locationRepository.getCalorieConsumptionLiveData().getValue())))).start();
+
+        Log.i("QQQ", "onBind: 저장");
 
         return super.onUnbind(intent);
     }
