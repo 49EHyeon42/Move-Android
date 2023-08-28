@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
-import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -119,7 +118,7 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
     @Override
     public boolean onUnbind(Intent intent) {
         new Thread(() -> recordDao.insertRecord(new Record(
-                SystemClock.elapsedRealtime(),
+                System.currentTimeMillis(),
                 stopwatchRepository.getSecondLiveData().getValue(),
                 locationRepository.getTotalTravelDistanceLiveData().getValue(),
                 locationRepository.getAverageSpeedLiveData().getValue(),

@@ -8,27 +8,27 @@ import androidx.room.PrimaryKey;
 public class Record {
 
     @PrimaryKey
-    private Long id;
+    private final Long id;
 
     @NonNull
-    private Integer second;
+    private final Integer elapsedTime; // 경과 시간, 단위: second
 
     @NonNull
-    private Float totalDistance;
+    private final Float totalTravelDistance; // 총 이동 거리, 단위: meter
 
     @NonNull
-    private Float averageSpeed;
+    private final Float averageSpeed; // 평균 속력, 단위: km/h
 
     @NonNull
-    private Integer step;
+    private final Integer step; // 걸음수
 
     @NonNull
-    private Float kiloCalorie;
+    private final Float kiloCalorie; // 칼로리, 단위: kiloCalorie
 
-    public Record(Long id, @NonNull Integer second, @NonNull Float totalDistance, @NonNull Float averageSpeed, @NonNull Integer step, @NonNull Float kiloCalorie) {
+    public Record(Long id, @NonNull Integer elapsedTime, @NonNull Float totalTravelDistance, @NonNull Float averageSpeed, @NonNull Integer step, @NonNull Float kiloCalorie) {
         this.id = id;
-        this.second = second;
-        this.totalDistance = totalDistance;
+        this.elapsedTime = elapsedTime;
+        this.totalTravelDistance = totalTravelDistance;
         this.averageSpeed = averageSpeed;
         this.step = step;
         this.kiloCalorie = kiloCalorie;
@@ -38,26 +38,14 @@ public class Record {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    @NonNull
+    public Integer getElapsedTime() {
+        return elapsedTime;
     }
 
     @NonNull
-    public Integer getSecond() {
-        return second;
-    }
-
-    public void setSecond(@NonNull Integer second) {
-        this.second = second;
-    }
-
-    @NonNull
-    public Float getTotalDistance() {
-        return totalDistance;
-    }
-
-    public void setTotalDistance(@NonNull Float totalDistance) {
-        this.totalDistance = totalDistance;
+    public Float getTotalTravelDistance() {
+        return totalTravelDistance;
     }
 
     @NonNull
@@ -65,25 +53,13 @@ public class Record {
         return averageSpeed;
     }
 
-    public void setAverageSpeed(@NonNull Float averageSpeed) {
-        this.averageSpeed = averageSpeed;
-    }
-
     @NonNull
     public Integer getStep() {
         return step;
     }
 
-    public void setStep(@NonNull Integer step) {
-        this.step = step;
-    }
-
     @NonNull
     public Float getKiloCalorie() {
         return kiloCalorie;
-    }
-
-    public void setKiloCalorie(@NonNull Float kiloCalorie) {
-        this.kiloCalorie = kiloCalorie;
     }
 }
