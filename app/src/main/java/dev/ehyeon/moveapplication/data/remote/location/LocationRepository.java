@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import dev.ehyeon.moveapplication.data.remote.location.sub.KilocalorieConsumptionRepository;
 import dev.ehyeon.moveapplication.data.remote.location.sub.SpeedRepository;
 import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
@@ -28,6 +29,7 @@ public class LocationRepository {
     private static final long INTERVAL_MILLIS = 1000;
 
     private final SpeedRepository speedRepository;
+    private final KilocalorieConsumptionRepository kilocalorieConsumptionRepository;
 
     private final List<LatLng> latLngList;
     private final NonNullMutableLiveData<List<LatLng>> latLngListNonNullMutableLiveData;
@@ -35,23 +37,20 @@ public class LocationRepository {
     private Location previousLocation;
     private final NonNullMutableLiveData<Float> totalDistanceNonNullMutableLiveData;
 
-    private final NonNullMutableLiveData<Float> calorieConsumptionNonNullMutableLiveData;
-
     private FusedLocationProviderClient fusedLocationProviderClient;
 
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
 
     @Inject
-    public LocationRepository(SpeedRepository speedRepository) {
+    public LocationRepository(SpeedRepository speedRepository, KilocalorieConsumptionRepository kilocalorieConsumptionRepository) {
         this.speedRepository = speedRepository;
+        this.kilocalorieConsumptionRepository = kilocalorieConsumptionRepository;
 
         latLngList = new ArrayList<>();
         latLngListNonNullMutableLiveData = new NonNullMutableLiveData<>(latLngList);
 
         totalDistanceNonNullMutableLiveData = new NonNullMutableLiveData<>(0f);
-
-        calorieConsumptionNonNullMutableLiveData = new NonNullMutableLiveData<>(0f);
     }
 
     public void initializeContext(Context context) {
@@ -86,14 +85,13 @@ public class LocationRepository {
 
                     previousLocation = location;
 
+                    float currentSpeed = location.getSpeed();
+
                     // Speed
-                    float currentSpeedPerSecond = location.getSpeed();
+                    speedRepository.updateSpeed(currentSpeed);
 
-                    speedRepository.updateSpeed(currentSpeedPerSecond);
-
-                    // Calorie
-                    calorieConsumptionNonNullMutableLiveData.setValue(
-                            calorieConsumptionNonNullMutableLiveData.getValue() + getCaloriePerSecond(currentSpeedPerSecond));
+                    // kilocalorie, 65kg 가정
+                    kilocalorieConsumptionRepository.updateKilocalorieConsumption(65, currentSpeed);
                 }
             }
         };
@@ -114,6 +112,7 @@ public class LocationRepository {
         latLngList.clear();
         previousLocation = null;
         speedRepository.initializeSpeed();
+        kilocalorieConsumptionRepository.initializeKilocalorieConsumption();
     }
 
     public LiveData<List<LatLng>> getLatLngListLiveData() {
@@ -128,45 +127,7 @@ public class LocationRepository {
         return speedRepository.getAverageSpeedLiveData();
     }
 
-    public LiveData<Float> getCalorieConsumptionLiveData() {
-        return calorieConsumptionNonNullMutableLiveData;
-    }
-
-    private float getCaloriePerSecond(float speed) {
-        // 1분당 MET * 1분당 산소 섭취(3.5ml) * 몸무게(65 가정) / 1000 * 5
-        return getMetPerSecond(speed) * 0.058f * 65 / 200;
-    }
-
-    private float getMetPerSecond(float speed) {
-        if (speed < 0) {
-            return 0;
-        } else if (speed <= 3) {
-            return 0.833f;
-        } else if (speed <= 4) {
-            return 1.111f;
-        } else if (speed <= 5) {
-            return 1.389f;
-        } else if (speed <= 6) {
-            return 1.667f;
-        } else if (speed <= 7) {
-            return 1.944f;
-        } else if (speed <= 8) {
-            return 2.222f;
-        } else if (speed <= 9) {
-            return 2.5f;
-        } else if (speed <= 10) {
-            return 2.778f;
-        } else if (speed <= 11) {
-            return 3.056f;
-        } else if (speed <= 12) {
-            return 3.333f;
-        } else if (speed <= 13) {
-            return 3.611f;
-        } else if (speed <= 14) {
-            return 3.889f;
-        } else if (speed <= 15) {
-            return 4.167f;
-        }
-        return 4.5f;
+    public LiveData<Float> getKilocalorieConsumptionLiveData() {
+        return kilocalorieConsumptionRepository.getKilocalorieConsumptionLiveData();
     }
 }

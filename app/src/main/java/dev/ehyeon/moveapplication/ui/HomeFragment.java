@@ -126,7 +126,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             trackingService.getStepLiveData().observe(trackingService, step ->
                     binding.fragmentHomeStepTextView.setText(String.format(Locale.getDefault(), "걸음 수 %,d", step)));
 
-            trackingService.getCalorieConsumptionLiveData().observe(trackingService, calorie ->
+            trackingService.getKilocalorieConsumptionLiveData().observe(trackingService, calorie ->
                     binding.fragmentHomeCalorieTextView.setText(String.format(Locale.getDefault(), "칼로리 소모량 %.1f kcal", calorie)));
         });
     }

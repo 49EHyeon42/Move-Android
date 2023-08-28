@@ -4,10 +4,11 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.components.ServiceComponent;
-import dev.ehyeon.moveapplication.data.remote.location.LocationRepository;
 import dev.ehyeon.moveapplication.data.local.step.SensorEventListener2Impl;
 import dev.ehyeon.moveapplication.data.local.step.StepRepository;
 import dev.ehyeon.moveapplication.data.local.stopwatch.StopwatchRepository;
+import dev.ehyeon.moveapplication.data.remote.location.LocationRepository;
+import dev.ehyeon.moveapplication.data.remote.location.sub.KilocalorieConsumptionRepository;
 import dev.ehyeon.moveapplication.data.remote.location.sub.SpeedRepository;
 
 @Module
@@ -25,8 +26,13 @@ public class TrackingServiceModule {
     }
 
     @Provides
-    public LocationRepository provideLocationRepository(SpeedRepository speedRepository) {
-        return new LocationRepository(speedRepository);
+    public KilocalorieConsumptionRepository provideKilocalorieConsumptionRepository() {
+        return new KilocalorieConsumptionRepository();
+    }
+
+    @Provides
+    public LocationRepository provideLocationRepository(SpeedRepository speedRepository, KilocalorieConsumptionRepository kilocalorieConsumptionRepository) {
+        return new LocationRepository(speedRepository, kilocalorieConsumptionRepository);
     }
 
     @Provides

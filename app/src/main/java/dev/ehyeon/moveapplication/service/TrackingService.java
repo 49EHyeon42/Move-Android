@@ -120,8 +120,8 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
         return stepRepository.getStepLiveData();
     }
 
-    public LiveData<Float> getCalorieConsumptionLiveData() {
-        return locationRepository.getCalorieConsumptionLiveData();
+    public LiveData<Float> getKilocalorieConsumptionLiveData() {
+        return locationRepository.getKilocalorieConsumptionLiveData();
     }
 
     @Override
@@ -134,7 +134,7 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
                 Objects.requireNonNull(locationRepository.getTotalDistanceLiveData().getValue()),
                 Objects.requireNonNull(locationRepository.getAverageSpeedLiveData().getValue()),
                 Objects.requireNonNull(stepRepository.getStepLiveData().getValue()),
-                Objects.requireNonNull(locationRepository.getCalorieConsumptionLiveData().getValue())))).start();
+                Objects.requireNonNull(locationRepository.getKilocalorieConsumptionLiveData().getValue())))).start();
 
         Log.i("QQQ", "onBind: 저장");
 
