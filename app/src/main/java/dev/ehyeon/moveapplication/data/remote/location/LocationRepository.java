@@ -2,14 +2,11 @@ package dev.ehyeon.moveapplication.data.remote.location;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.location.Location;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -23,7 +20,6 @@ import dev.ehyeon.moveapplication.data.remote.location.sub.SpeedRepository;
 import dev.ehyeon.moveapplication.data.remote.location.sub.TravelDistanceRepository;
 import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
-// TODO refactor
 public class LocationRepository {
 
     private static final long INTERVAL_MILLIS = 1000;
@@ -50,42 +46,24 @@ public class LocationRepository {
         latLngListNonNullMutableLiveData = new NonNullMutableLiveData<>(latLngList);
 
         locationRequest = new LocationRequest.Builder(INTERVAL_MILLIS).build();
-        locationCallback = new LocationCallback() {
-
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                Location location = locationResult.getLastLocation();
-
-                if (location != null) {
-                    LatLng newLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-                    // latLng list
-                    latLngList.add(newLatLng);
-                    latLngListNonNullMutableLiveData.setValue(latLngList);
-
-                    // distance
-                    travelDistanceRepository.updateTravelDistance(location);
-
-                    float currentSpeed = location.getSpeed();
-
-                    // Speed
-                    speedRepository.updateSpeed(currentSpeed);
-
-                    // kilocalorie, 65kg 가정
-                    kilocalorieConsumptionRepository.updateKilocalorieConsumption(65, currentSpeed);
-                }
-            }
-        };
+        locationCallback = new CustomLocationCallback(latLngList, latLngListNonNullMutableLiveData,
+                travelDistanceRepository,
+                speedRepository,
+                kilocalorieConsumptionRepository);
     }
 
     @SuppressLint("MissingPermission")
     public void startLocationUpdate(Context context) {
+        initializeAll();
+
+        LocationServices.getFusedLocationProviderClient(context).requestLocationUpdates(locationRequest, locationCallback, null);
+    }
+
+    private void initializeAll() {
         latLngList.clear();
         travelDistanceRepository.initializeTravelDistance();
         speedRepository.initializeSpeed();
         kilocalorieConsumptionRepository.initializeKilocalorieConsumption();
-
-        LocationServices.getFusedLocationProviderClient(context).requestLocationUpdates(locationRequest, locationCallback, null);
     }
 
     public void stopLocationUpdate(Context context) {
