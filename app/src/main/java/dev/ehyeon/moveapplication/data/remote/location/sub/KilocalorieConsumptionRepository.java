@@ -1,7 +1,6 @@
 package dev.ehyeon.moveapplication.data.remote.location.sub;
 
-import androidx.lifecycle.LiveData;
-
+import dev.ehyeon.moveapplication.util.NonNullLiveData;
 import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
 public class KilocalorieConsumptionRepository {
@@ -54,7 +53,7 @@ public class KilocalorieConsumptionRepository {
         return 4.5f;
     }
 
-    public LiveData<Float> getKilocalorieConsumptionLiveData() {
+    public NonNullLiveData<Float> getKilocalorieConsumptionLiveData() {
         return kilocalorieConsumptionNonNullMutableLiveData;
     }
 }

@@ -1,12 +1,13 @@
 package dev.ehyeon.moveapplication.util;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 
 import java.util.Objects;
 
-public class NonNullMutableLiveData<T> extends NonNullLiveData<T> {
+public class NonNullLiveData<T> extends LiveData<T> {
 
-    public NonNullMutableLiveData(@NonNull T value) {
+    public NonNullLiveData(@NonNull T value) {
         super(value);
     }
 
@@ -17,12 +18,12 @@ public class NonNullMutableLiveData<T> extends NonNullLiveData<T> {
     }
 
     @Override
-    public void postValue(@NonNull T value) {
+    protected void postValue(@NonNull T value) {
         super.postValue(value);
     }
 
     @Override
-    public void setValue(@NonNull T value) {
+    protected void setValue(@NonNull T value) {
         super.setValue(value);
     }
 }

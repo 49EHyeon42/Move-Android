@@ -4,8 +4,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener2;
 
-import androidx.lifecycle.LiveData;
-
+import dev.ehyeon.moveapplication.util.NonNullLiveData;
 import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
 public class SensorEventListener2Impl implements SensorEventListener2 {
@@ -35,7 +34,7 @@ public class SensorEventListener2Impl implements SensorEventListener2 {
         stepNonNullMutableLiveData.setValue(0);
     }
 
-    public LiveData<Integer> getStepLiveData() {
+    public NonNullLiveData<Integer> getStepLiveData() {
         return stepNonNullMutableLiveData;
     }
 }

@@ -2,8 +2,7 @@ package dev.ehyeon.moveapplication.data.local.stopwatch;
 
 import android.os.Handler;
 
-import androidx.lifecycle.LiveData;
-
+import dev.ehyeon.moveapplication.util.NonNullLiveData;
 import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
 public class StopwatchRepository {
@@ -44,7 +43,7 @@ public class StopwatchRepository {
         secondNonNullMutableLiveData.setValue(0);
     }
 
-    public LiveData<Integer> getSecondLiveData() {
+    public NonNullLiveData<Integer> getSecondLiveData() {
         return secondNonNullMutableLiveData;
     }
 }

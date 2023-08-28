@@ -2,8 +2,7 @@ package dev.ehyeon.moveapplication.data.remote.location.sub;
 
 import android.location.Location;
 
-import androidx.lifecycle.LiveData;
-
+import dev.ehyeon.moveapplication.util.NonNullLiveData;
 import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
 public class TravelDistanceRepository {
@@ -31,7 +30,7 @@ public class TravelDistanceRepository {
         previousLocation = currentLocation;
     }
 
-    public LiveData<Float> getTotalTravelDistanceLiveData() {
+    public NonNullLiveData<Float> getTotalTravelDistanceLiveData() {
         return totalTravelDistanceNonNullMutableLiveData;
     }
 }

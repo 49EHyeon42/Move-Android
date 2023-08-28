@@ -7,9 +7,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
 
 import javax.inject.Inject;
+
+import dev.ehyeon.moveapplication.util.NonNullLiveData;
 
 public class StepRepository {
 
@@ -31,7 +32,7 @@ public class StepRepository {
         ((SensorManager) context.getSystemService(Context.SENSOR_SERVICE)).unregisterListener(sensorEventListener2Impl);
     }
 
-    public LiveData<Integer> getStepLiveData() {
+    public NonNullLiveData<Integer> getStepLiveData() {
         return sensorEventListener2Impl.getStepLiveData();
     }
 }

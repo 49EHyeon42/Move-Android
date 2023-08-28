@@ -1,10 +1,9 @@
 package dev.ehyeon.moveapplication.data.remote.location.sub;
 
-import androidx.lifecycle.LiveData;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import dev.ehyeon.moveapplication.util.NonNullLiveData;
 import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
 public class SpeedRepository {
@@ -41,7 +40,7 @@ public class SpeedRepository {
         return f * 3.6f;
     }
 
-    public LiveData<Float> getAverageSpeedLiveData() {
+    public NonNullLiveData<Float> getAverageSpeedLiveData() {
         return averageSpeedNonNullMutableLiveData;
     }
 }

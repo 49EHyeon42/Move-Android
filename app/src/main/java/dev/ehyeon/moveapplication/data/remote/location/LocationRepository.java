@@ -3,8 +3,6 @@ package dev.ehyeon.moveapplication.data.remote.location;
 import android.annotation.SuppressLint;
 import android.content.Context;
 
-import androidx.lifecycle.LiveData;
-
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -18,6 +16,7 @@ import javax.inject.Inject;
 import dev.ehyeon.moveapplication.data.remote.location.sub.KilocalorieConsumptionRepository;
 import dev.ehyeon.moveapplication.data.remote.location.sub.SpeedRepository;
 import dev.ehyeon.moveapplication.data.remote.location.sub.TravelDistanceRepository;
+import dev.ehyeon.moveapplication.util.NonNullLiveData;
 import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
 public class LocationRepository {
@@ -70,19 +69,19 @@ public class LocationRepository {
         LocationServices.getFusedLocationProviderClient(context).removeLocationUpdates(locationCallback);
     }
 
-    public LiveData<List<LatLng>> getLatLngListLiveData() {
+    public NonNullLiveData<List<LatLng>> getLatLngListLiveData() {
         return latLngListNonNullMutableLiveData;
     }
 
-    public LiveData<Float> getTotalTravelDistanceLiveData() {
+    public NonNullLiveData<Float> getTotalTravelDistanceLiveData() {
         return travelDistanceRepository.getTotalTravelDistanceLiveData();
     }
 
-    public LiveData<Float> getAverageSpeedLiveData() {
+    public NonNullLiveData<Float> getAverageSpeedLiveData() {
         return speedRepository.getAverageSpeedLiveData();
     }
 
-    public LiveData<Float> getKilocalorieConsumptionLiveData() {
+    public NonNullLiveData<Float> getKilocalorieConsumptionLiveData() {
         return kilocalorieConsumptionRepository.getKilocalorieConsumptionLiveData();
     }
 }
