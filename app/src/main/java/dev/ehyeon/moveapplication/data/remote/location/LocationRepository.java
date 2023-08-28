@@ -7,7 +7,6 @@ import android.location.Location;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -36,31 +35,19 @@ public class LocationRepository {
     private final List<LatLng> latLngList;
     private final NonNullMutableLiveData<List<LatLng>> latLngListNonNullMutableLiveData;
 
-    private FusedLocationProviderClient fusedLocationProviderClient;
-
-    private LocationRequest locationRequest;
-    private LocationCallback locationCallback;
+    private final LocationRequest locationRequest;
+    private final LocationCallback locationCallback;
 
     @Inject
-    public LocationRepository(TravelDistanceRepository travelDistanceRepository, SpeedRepository speedRepository, KilocalorieConsumptionRepository kilocalorieConsumptionRepository) {
+    public LocationRepository(TravelDistanceRepository travelDistanceRepository,
+                              SpeedRepository speedRepository,
+                              KilocalorieConsumptionRepository kilocalorieConsumptionRepository) {
         this.travelDistanceRepository = travelDistanceRepository;
         this.speedRepository = speedRepository;
         this.kilocalorieConsumptionRepository = kilocalorieConsumptionRepository;
 
         latLngList = new ArrayList<>();
         latLngListNonNullMutableLiveData = new NonNullMutableLiveData<>(latLngList);
-    }
-
-    public void initializeContext(Context context) {
-        if (context == null) {
-            fusedLocationProviderClient = null;
-
-            locationRequest = null;
-            locationCallback = null;
-            return;
-        }
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
 
         locationRequest = new LocationRequest.Builder(INTERVAL_MILLIS).build();
         locationCallback = new LocationCallback() {
@@ -72,6 +59,7 @@ public class LocationRepository {
                 if (location != null) {
                     LatLng newLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
+                    // latLng list
                     latLngList.add(newLatLng);
                     latLngListNonNullMutableLiveData.setValue(latLngList);
 
@@ -91,21 +79,17 @@ public class LocationRepository {
     }
 
     @SuppressLint("MissingPermission")
-    public void startLocationSensor() {
-        initAll();
-
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
-    }
-
-    public void stopLocationSensor() {
-        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-    }
-
-    public void initAll() {
+    public void startLocationUpdate(Context context) {
         latLngList.clear();
         travelDistanceRepository.initializeTravelDistance();
         speedRepository.initializeSpeed();
         kilocalorieConsumptionRepository.initializeKilocalorieConsumption();
+
+        LocationServices.getFusedLocationProviderClient(context).requestLocationUpdates(locationRequest, locationCallback, null);
+    }
+
+    public void stopLocationUpdate(Context context) {
+        LocationServices.getFusedLocationProviderClient(context).removeLocationUpdates(locationCallback);
     }
 
     public LiveData<List<LatLng>> getLatLngListLiveData() {
