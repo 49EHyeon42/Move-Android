@@ -8,6 +8,7 @@ import dev.ehyeon.moveapplication.data.remote.location.LocationRepository;
 import dev.ehyeon.moveapplication.data.local.step.SensorEventListener2Impl;
 import dev.ehyeon.moveapplication.data.local.step.StepRepository;
 import dev.ehyeon.moveapplication.data.local.stopwatch.StopwatchRepository;
+import dev.ehyeon.moveapplication.data.remote.location.sub.SpeedRepository;
 
 @Module
 @InstallIn(ServiceComponent.class)
@@ -19,8 +20,13 @@ public class TrackingServiceModule {
     }
 
     @Provides
-    public LocationRepository provideLocationRepository() {
-        return new LocationRepository();
+    public SpeedRepository provideSpeedRepository() {
+        return new SpeedRepository();
+    }
+
+    @Provides
+    public LocationRepository provideLocationRepository(SpeedRepository speedRepository) {
+        return new LocationRepository(speedRepository);
     }
 
     @Provides

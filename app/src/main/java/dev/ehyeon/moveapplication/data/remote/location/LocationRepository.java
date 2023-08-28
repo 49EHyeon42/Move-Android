@@ -17,6 +17,9 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dev.ehyeon.moveapplication.data.remote.location.sub.SpeedRepository;
 import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
 // TODO refactor
@@ -24,16 +27,13 @@ public class LocationRepository {
 
     private static final long INTERVAL_MILLIS = 1000;
 
+    private final SpeedRepository speedRepository;
+
     private final List<LatLng> latLngList;
     private final NonNullMutableLiveData<List<LatLng>> latLngListNonNullMutableLiveData;
 
     private Location previousLocation;
     private final NonNullMutableLiveData<Float> totalDistanceNonNullMutableLiveData;
-
-    private final NonNullMutableLiveData<Float> averageSpeedNonNullMutableLiveData;
-
-    private final List<Float> speedList;
-    private final NonNullMutableLiveData<List<Float>> speedListNonNullMutableLiveData;
 
     private final NonNullMutableLiveData<Float> calorieConsumptionNonNullMutableLiveData;
 
@@ -42,16 +42,14 @@ public class LocationRepository {
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
 
-    public LocationRepository() {
+    @Inject
+    public LocationRepository(SpeedRepository speedRepository) {
+        this.speedRepository = speedRepository;
+
         latLngList = new ArrayList<>();
         latLngListNonNullMutableLiveData = new NonNullMutableLiveData<>(latLngList);
 
         totalDistanceNonNullMutableLiveData = new NonNullMutableLiveData<>(0f);
-
-        averageSpeedNonNullMutableLiveData = new NonNullMutableLiveData<>(0f);
-
-        speedList = new ArrayList<>();
-        speedListNonNullMutableLiveData = new NonNullMutableLiveData<>(speedList);
 
         calorieConsumptionNonNullMutableLiveData = new NonNullMutableLiveData<>(0f);
     }
@@ -90,14 +88,10 @@ public class LocationRepository {
 
                     // Speed
                     float currentSpeedPerSecond = location.getSpeed();
-                    float currentSpeed = meterPerSecondToKilometerPerHour(currentSpeedPerSecond);
-                    float previousAverageSpeed = averageSpeedNonNullMutableLiveData.getValue();
 
-                    averageSpeedNonNullMutableLiveData.setValue(previousAverageSpeed == 0 ? currentSpeed : (currentSpeed + previousAverageSpeed) / 2);
+                    speedRepository.updateSpeed(currentSpeedPerSecond);
 
-                    speedList.add(currentSpeed);
-                    speedListNonNullMutableLiveData.setValue(speedList);
-
+                    // Calorie
                     calorieConsumptionNonNullMutableLiveData.setValue(
                             calorieConsumptionNonNullMutableLiveData.getValue() + getCaloriePerSecond(currentSpeedPerSecond));
                 }
@@ -119,7 +113,7 @@ public class LocationRepository {
     public void initAll() {
         latLngList.clear();
         previousLocation = null;
-        speedList.clear();
+        speedRepository.initializeSpeed();
     }
 
     public LiveData<List<LatLng>> getLatLngListLiveData() {
@@ -131,11 +125,7 @@ public class LocationRepository {
     }
 
     public LiveData<Float> getAverageSpeedLiveData() {
-        return averageSpeedNonNullMutableLiveData;
-    }
-
-    private float meterPerSecondToKilometerPerHour(float f) {
-        return f * 3.6f;
+        return speedRepository.getAverageSpeedLiveData();
     }
 
     public LiveData<Float> getCalorieConsumptionLiveData() {
