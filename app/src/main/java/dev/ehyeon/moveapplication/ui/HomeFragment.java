@@ -115,7 +115,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     binding.fragmentHomeTimeTextView
                             .setText(String.format(Locale.getDefault(), "경과 시간 %02d:%02d:%02d", second / 3600, (second % 3600) / 60, second % 60)));
 
-            trackingService.getTotalDistanceLiveData().observe(trackingService, totalDistance ->
+            trackingService.getTotalTravelDistanceLiveData().observe(trackingService, totalDistance ->
                     binding.fragmentHomeTotalDistanceTextView
                             .setText(String.format(Locale.getDefault(), "총 이동 거리 %.0f m", totalDistance)));
 

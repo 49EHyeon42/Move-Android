@@ -108,8 +108,8 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
         return locationRepository.getLatLngListLiveData();
     }
 
-    public LiveData<Float> getTotalDistanceLiveData() {
-        return locationRepository.getTotalDistanceLiveData();
+    public LiveData<Float> getTotalTravelDistanceLiveData() {
+        return locationRepository.getTotalTravelDistanceLiveData();
     }
 
     public LiveData<Float> getAverageSpeedLiveData() {
@@ -131,7 +131,7 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
         new Thread(() -> recordDao.insertRecord(new Record(
                 SystemClock.elapsedRealtime(),
                 Objects.requireNonNull(stopwatchRepository.getSecondLiveData().getValue()),
-                Objects.requireNonNull(locationRepository.getTotalDistanceLiveData().getValue()),
+                Objects.requireNonNull(locationRepository.getTotalTravelDistanceLiveData().getValue()),
                 Objects.requireNonNull(locationRepository.getAverageSpeedLiveData().getValue()),
                 Objects.requireNonNull(stepRepository.getStepLiveData().getValue()),
                 Objects.requireNonNull(locationRepository.getKilocalorieConsumptionLiveData().getValue())))).start();

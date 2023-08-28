@@ -10,6 +10,7 @@ import dev.ehyeon.moveapplication.data.local.stopwatch.StopwatchRepository;
 import dev.ehyeon.moveapplication.data.remote.location.LocationRepository;
 import dev.ehyeon.moveapplication.data.remote.location.sub.KilocalorieConsumptionRepository;
 import dev.ehyeon.moveapplication.data.remote.location.sub.SpeedRepository;
+import dev.ehyeon.moveapplication.data.remote.location.sub.TravelDistanceRepository;
 
 @Module
 @InstallIn(ServiceComponent.class)
@@ -18,6 +19,11 @@ public class TrackingServiceModule {
     @Provides
     public StopwatchRepository provideStopwatchRepository() {
         return new StopwatchRepository();
+    }
+
+    @Provides
+    public TravelDistanceRepository provideTravelDistanceRepository() {
+        return new TravelDistanceRepository();
     }
 
     @Provides
@@ -31,8 +37,8 @@ public class TrackingServiceModule {
     }
 
     @Provides
-    public LocationRepository provideLocationRepository(SpeedRepository speedRepository, KilocalorieConsumptionRepository kilocalorieConsumptionRepository) {
-        return new LocationRepository(speedRepository, kilocalorieConsumptionRepository);
+    public LocationRepository provideLocationRepository(TravelDistanceRepository travelDistanceRepository, SpeedRepository speedRepository, KilocalorieConsumptionRepository kilocalorieConsumptionRepository) {
+        return new LocationRepository(travelDistanceRepository, speedRepository, kilocalorieConsumptionRepository);
     }
 
     @Provides

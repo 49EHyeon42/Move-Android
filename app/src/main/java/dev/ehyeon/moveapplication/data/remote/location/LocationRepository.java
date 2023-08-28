@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import dev.ehyeon.moveapplication.data.remote.location.sub.KilocalorieConsumptionRepository;
 import dev.ehyeon.moveapplication.data.remote.location.sub.SpeedRepository;
+import dev.ehyeon.moveapplication.data.remote.location.sub.TravelDistanceRepository;
 import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
 // TODO refactor
@@ -28,14 +29,12 @@ public class LocationRepository {
 
     private static final long INTERVAL_MILLIS = 1000;
 
+    private final TravelDistanceRepository travelDistanceRepository;
     private final SpeedRepository speedRepository;
     private final KilocalorieConsumptionRepository kilocalorieConsumptionRepository;
 
     private final List<LatLng> latLngList;
     private final NonNullMutableLiveData<List<LatLng>> latLngListNonNullMutableLiveData;
-
-    private Location previousLocation;
-    private final NonNullMutableLiveData<Float> totalDistanceNonNullMutableLiveData;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -43,14 +42,13 @@ public class LocationRepository {
     private LocationCallback locationCallback;
 
     @Inject
-    public LocationRepository(SpeedRepository speedRepository, KilocalorieConsumptionRepository kilocalorieConsumptionRepository) {
+    public LocationRepository(TravelDistanceRepository travelDistanceRepository, SpeedRepository speedRepository, KilocalorieConsumptionRepository kilocalorieConsumptionRepository) {
+        this.travelDistanceRepository = travelDistanceRepository;
         this.speedRepository = speedRepository;
         this.kilocalorieConsumptionRepository = kilocalorieConsumptionRepository;
 
         latLngList = new ArrayList<>();
         latLngListNonNullMutableLiveData = new NonNullMutableLiveData<>(latLngList);
-
-        totalDistanceNonNullMutableLiveData = new NonNullMutableLiveData<>(0f);
     }
 
     public void initializeContext(Context context) {
@@ -78,12 +76,7 @@ public class LocationRepository {
                     latLngListNonNullMutableLiveData.setValue(latLngList);
 
                     // distance
-                    if (previousLocation != null) {
-                        totalDistanceNonNullMutableLiveData.setValue(
-                                totalDistanceNonNullMutableLiveData.getValue() + previousLocation.distanceTo(location));
-                    }
-
-                    previousLocation = location;
+                    travelDistanceRepository.updateTravelDistance(location);
 
                     float currentSpeed = location.getSpeed();
 
@@ -110,7 +103,7 @@ public class LocationRepository {
 
     public void initAll() {
         latLngList.clear();
-        previousLocation = null;
+        travelDistanceRepository.initializeTravelDistance();
         speedRepository.initializeSpeed();
         kilocalorieConsumptionRepository.initializeKilocalorieConsumption();
     }
@@ -119,8 +112,8 @@ public class LocationRepository {
         return latLngListNonNullMutableLiveData;
     }
 
-    public LiveData<Float> getTotalDistanceLiveData() {
-        return totalDistanceNonNullMutableLiveData;
+    public LiveData<Float> getTotalTravelDistanceLiveData() {
+        return travelDistanceRepository.getTotalTravelDistanceLiveData();
     }
 
     public LiveData<Float> getAverageSpeedLiveData() {
