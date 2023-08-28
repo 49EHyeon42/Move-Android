@@ -77,7 +77,7 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
 
         stopwatchRepository.startStopwatch();
         locationRepository.startLocationUpdate(this);
-        stepRepository.startStepSensor(this);
+        stepRepository.startStepUpdate(this);
 
         return START_NOT_STICKY;
     }
@@ -149,6 +149,6 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
 
         stopwatchRepository.stopStopwatch();
         locationRepository.stopLocationUpdate(this);
-        stepRepository.stopStepSensor(this);
+        stepRepository.stopStepUpdate(this);
     }
 }

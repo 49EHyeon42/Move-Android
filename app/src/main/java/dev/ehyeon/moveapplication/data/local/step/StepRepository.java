@@ -20,14 +20,14 @@ public class StepRepository {
         this.sensorEventListener2Impl = sensorEventListener2Impl;
     }
 
-    public void startStepSensor(@NonNull Context context) {
+    public void startStepUpdate(@NonNull Context context) {
         sensorEventListener2Impl.initializeStep();
 
         SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         sensorManager.registerListener(sensorEventListener2Impl, sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR), SENSOR_DELAY_NORMAL);
     }
 
-    public void stopStepSensor(@NonNull Context context) {
+    public void stopStepUpdate(@NonNull Context context) {
         ((SensorManager) context.getSystemService(Context.SENSOR_SERVICE)).unregisterListener(sensorEventListener2Impl);
     }
 
