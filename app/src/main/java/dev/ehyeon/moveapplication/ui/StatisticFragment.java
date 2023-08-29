@@ -9,30 +9,39 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import dev.ehyeon.moveapplication.R;
+import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+import dev.ehyeon.moveapplication.data.local.record.RecordDao;
+import dev.ehyeon.moveapplication.databinding.FragmentStatisticBinding;
+
+@AndroidEntryPoint
 public class StatisticFragment extends Fragment {
+
+    @Inject
+    protected RecordDao recordDao;
+
+    private FragmentStatisticBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_statistic, container, false);
+        binding = FragmentStatisticBinding.inflate(inflater, container, false);
 
-        List<String> list = new ArrayList<>();
+        StatisticFragmentRecyclerViewAdapter recyclerViewAdapter = new StatisticFragmentRecyclerViewAdapter(new ArrayList<>());
 
-        for (int i = 0; i < 10; i++) {
-            list.add("Hello, world! " + i);
-        }
+        binding.fragmentStatisticRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.fragmentStatisticRecyclerView.setAdapter(recyclerViewAdapter);
 
-        RecyclerView recyclerView = view.findViewById(R.id.fragmentStatistic_recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.setAdapter(new StatisticFragmentRecyclerViewAdapter(list));
+        // TODO refactor record -> recordDto
+        recordDao.selectAllRecordLiveData().observe(getViewLifecycleOwner(), records -> {
+            recyclerViewAdapter.updateItem(records);
+            recyclerViewAdapter.notifyDataSetChanged();
+        });
 
-        return view;
+        return binding.getRoot();
     }
 }
