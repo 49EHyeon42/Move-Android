@@ -23,15 +23,15 @@ public class Record {
     private final Integer step; // 걸음수
 
     @NonNull
-    private final Float kiloCalorie; // 칼로리, 단위: kiloCalorie
+    private final Float calorieConsumption; // 칼로리 소모량, 단위: kiloCalorie
 
-    public Record(Long id, @NonNull Integer elapsedTime, @NonNull Float totalTravelDistance, @NonNull Float averageSpeed, @NonNull Integer step, @NonNull Float kiloCalorie) {
+    public Record(Long id, @NonNull Integer elapsedTime, @NonNull Float totalTravelDistance, @NonNull Float averageSpeed, @NonNull Integer step, @NonNull Float calorieConsumption) {
         this.id = id;
         this.elapsedTime = elapsedTime;
         this.totalTravelDistance = totalTravelDistance;
         this.averageSpeed = averageSpeed;
         this.step = step;
-        this.kiloCalorie = kiloCalorie;
+        this.calorieConsumption = calorieConsumption;
     }
 
     public Long getId() {
@@ -59,7 +59,7 @@ public class Record {
     }
 
     @NonNull
-    public Float getKiloCalorie() {
-        return kiloCalorie;
+    public Float getCalorieConsumption() {
+        return calorieConsumption;
     }
 }

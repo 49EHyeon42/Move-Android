@@ -1,6 +1,5 @@
 package dev.ehyeon.moveapplication.ui;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,10 +24,11 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.Locale;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.databinding.FragmentHomeBinding;
-import dev.ehyeon.moveapplication.service.TrackingService;
 
+@AndroidEntryPoint
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
     private HomeFragmentViewModel viewModel;
@@ -56,21 +56,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             googleMapFragment.getMapAsync(this);
         }
 
-        binding.fragmentHomeTrackingServiceButton.setOnClickListener(ignored -> {
-            Intent trackingServiceIntent = new Intent(requireContext(), TrackingService.class);
-
-            if (viewModel.getTrackingServiceLiveData().getValue() != null) {
-                viewModel.unbindService();
-
-                if (requireContext().stopService(trackingServiceIntent)) {
-                    viewModel.disconnectTrackingService();
-                }
-            } else {
-                if (requireContext().startForegroundService(trackingServiceIntent) != null) {
-                    viewModel.bindService();
-                }
-            }
-        });
+        binding.fragmentHomeTrackingServiceButton.setOnClickListener(ignored -> viewModel.changeTrackingServiceStatus());
 
         return binding.getRoot();
     }
@@ -112,11 +98,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             }
 
             trackingService.getSecondLiveData().observe(trackingService, second ->
-                    binding.fragmentHomeTimeTextView
+                    binding.fragmentHomeElapsedTimeTextView
                             .setText(String.format(Locale.getDefault(), "경과 시간 %02d:%02d:%02d", second / 3600, (second % 3600) / 60, second % 60)));
 
             trackingService.getTotalTravelDistanceLiveData().observe(trackingService, totalDistance ->
-                    binding.fragmentHomeTotalDistanceTextView
+                    binding.fragmentHomeTotalTravelDistanceTextView
                             .setText(String.format(Locale.getDefault(), "총 이동 거리 %.0f m", totalDistance)));
 
             trackingService.getAverageSpeedLiveData().observe(trackingService, averageSpeed ->
@@ -126,8 +112,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             trackingService.getStepLiveData().observe(trackingService, step ->
                     binding.fragmentHomeStepTextView.setText(String.format(Locale.getDefault(), "걸음 수 %,d", step)));
 
-            trackingService.getKilocalorieConsumptionLiveData().observe(trackingService, calorie ->
-                    binding.fragmentHomeCalorieTextView.setText(String.format(Locale.getDefault(), "칼로리 소모량 %.1f kcal", calorie)));
+            trackingService.getCalorieConsumptionLiveData().observe(trackingService, calorie ->
+                    binding.fragmentHomeCalorieConsumptionTextView.setText(String.format(Locale.getDefault(), "칼로리 소모량 %.1f kcal", calorie)));
         });
     }
 
@@ -135,8 +121,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     public void onDestroy() {
         super.onDestroy();
 
-        viewModel.unbindService();
-
-        viewModel.onDestroyWithContext(requireContext());
+        viewModel.onDestroyWithContext();
     }
 }

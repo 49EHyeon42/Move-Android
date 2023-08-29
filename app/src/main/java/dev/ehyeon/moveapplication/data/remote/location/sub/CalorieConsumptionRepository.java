@@ -3,21 +3,21 @@ package dev.ehyeon.moveapplication.data.remote.location.sub;
 import dev.ehyeon.moveapplication.util.NonNullLiveData;
 import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 
-public class KilocalorieConsumptionRepository {
+public class CalorieConsumptionRepository {
 
-    private final NonNullMutableLiveData<Float> kilocalorieConsumptionNonNullMutableLiveData;
+    private final NonNullMutableLiveData<Float> calorieConsumptionNonNullMutableLiveData;
 
-    public KilocalorieConsumptionRepository() {
-        kilocalorieConsumptionNonNullMutableLiveData = new NonNullMutableLiveData<>(0f);
+    public CalorieConsumptionRepository() {
+        calorieConsumptionNonNullMutableLiveData = new NonNullMutableLiveData<>(0f);
     }
 
-    public void initializeKilocalorieConsumption() {
-        kilocalorieConsumptionNonNullMutableLiveData.setValue(0f);
+    public void initializeCalorieConsumption() {
+        calorieConsumptionNonNullMutableLiveData.setValue(0f);
     }
 
-    public void updateKilocalorieConsumption(float weight, float currentSpeed) {
+    public void updateCalorieConsumption(float weight, float currentSpeed) {
         // 1초당 kcal 소모량 = MET * 1초당 산소 섭취(0.058ml) * 몸무게 / 1000 * 5
-        kilocalorieConsumptionNonNullMutableLiveData.setValue(weight * getMet(currentSpeed) * 0.00029f);
+        calorieConsumptionNonNullMutableLiveData.setValue(weight * getMet(currentSpeed) * 0.00029f);
     }
 
     private float getMet(float currentSpeed) {
@@ -53,7 +53,7 @@ public class KilocalorieConsumptionRepository {
         return 4.5f;
     }
 
-    public NonNullLiveData<Float> getKilocalorieConsumptionLiveData() {
-        return kilocalorieConsumptionNonNullMutableLiveData;
+    public NonNullLiveData<Float> getCalorieConsumptionLiveData() {
+        return calorieConsumptionNonNullMutableLiveData;
     }
 }

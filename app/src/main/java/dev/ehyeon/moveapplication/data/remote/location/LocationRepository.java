@@ -13,7 +13,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import dev.ehyeon.moveapplication.data.remote.location.sub.KilocalorieConsumptionRepository;
+import dev.ehyeon.moveapplication.data.remote.location.sub.CalorieConsumptionRepository;
 import dev.ehyeon.moveapplication.data.remote.location.sub.SpeedRepository;
 import dev.ehyeon.moveapplication.data.remote.location.sub.TravelDistanceRepository;
 import dev.ehyeon.moveapplication.util.NonNullLiveData;
@@ -25,7 +25,7 @@ public class LocationRepository {
 
     private final TravelDistanceRepository travelDistanceRepository;
     private final SpeedRepository speedRepository;
-    private final KilocalorieConsumptionRepository kilocalorieConsumptionRepository;
+    private final CalorieConsumptionRepository calorieConsumptionRepository;
 
     private final List<LatLng> latLngList;
     private final NonNullMutableLiveData<List<LatLng>> latLngListNonNullMutableLiveData;
@@ -36,10 +36,10 @@ public class LocationRepository {
     @Inject
     public LocationRepository(TravelDistanceRepository travelDistanceRepository,
                               SpeedRepository speedRepository,
-                              KilocalorieConsumptionRepository kilocalorieConsumptionRepository) {
+                              CalorieConsumptionRepository calorieConsumptionRepository) {
         this.travelDistanceRepository = travelDistanceRepository;
         this.speedRepository = speedRepository;
-        this.kilocalorieConsumptionRepository = kilocalorieConsumptionRepository;
+        this.calorieConsumptionRepository = calorieConsumptionRepository;
 
         latLngList = new ArrayList<>();
         latLngListNonNullMutableLiveData = new NonNullMutableLiveData<>(latLngList);
@@ -48,7 +48,7 @@ public class LocationRepository {
         locationCallback = new CustomLocationCallback(latLngList, latLngListNonNullMutableLiveData,
                 travelDistanceRepository,
                 speedRepository,
-                kilocalorieConsumptionRepository);
+                calorieConsumptionRepository);
     }
 
     @SuppressLint("MissingPermission")
@@ -62,7 +62,7 @@ public class LocationRepository {
         latLngList.clear();
         travelDistanceRepository.initializeTravelDistance();
         speedRepository.initializeSpeed();
-        kilocalorieConsumptionRepository.initializeKilocalorieConsumption();
+        calorieConsumptionRepository.initializeCalorieConsumption();
     }
 
     public void stopLocationUpdate(Context context) {
@@ -81,7 +81,7 @@ public class LocationRepository {
         return speedRepository.getAverageSpeedLiveData();
     }
 
-    public NonNullLiveData<Float> getKilocalorieConsumptionLiveData() {
-        return kilocalorieConsumptionRepository.getKilocalorieConsumptionLiveData();
+    public NonNullLiveData<Float> getCalorieConsumptionLiveData() {
+        return calorieConsumptionRepository.getCalorieConsumptionLiveData();
     }
 }

@@ -22,8 +22,6 @@ import dev.ehyeon.moveapplication.MoveApplication;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.broadcast.BaseBroadcastListener;
 import dev.ehyeon.moveapplication.broadcast.BaseBroadcastReceiver;
-import dev.ehyeon.moveapplication.data.local.record.Record;
-import dev.ehyeon.moveapplication.data.local.record.RecordDao;
 import dev.ehyeon.moveapplication.data.local.step.StepRepository;
 import dev.ehyeon.moveapplication.data.local.stopwatch.StopwatchRepository;
 import dev.ehyeon.moveapplication.data.remote.location.LocationRepository;
@@ -31,9 +29,6 @@ import dev.ehyeon.moveapplication.util.NonNullLiveData;
 
 @AndroidEntryPoint
 public class TrackingService extends LifecycleService implements BaseBroadcastListener {
-
-    @Inject
-    protected RecordDao recordDao;
 
     @Inject
     protected StopwatchRepository stopwatchRepository;
@@ -111,20 +106,12 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
         return stepRepository.getStepLiveData();
     }
 
-    public NonNullLiveData<Float> getKilocalorieConsumptionLiveData() {
-        return locationRepository.getKilocalorieConsumptionLiveData();
+    public NonNullLiveData<Float> getCalorieConsumptionLiveData() {
+        return locationRepository.getCalorieConsumptionLiveData();
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-        new Thread(() -> recordDao.insertRecord(new Record(
-                System.currentTimeMillis(),
-                stopwatchRepository.getSecondLiveData().getValue(),
-                locationRepository.getTotalTravelDistanceLiveData().getValue(),
-                locationRepository.getAverageSpeedLiveData().getValue(),
-                stepRepository.getStepLiveData().getValue(),
-                locationRepository.getKilocalorieConsumptionLiveData().getValue()))).start();
-
         return super.onUnbind(intent);
     }
 
