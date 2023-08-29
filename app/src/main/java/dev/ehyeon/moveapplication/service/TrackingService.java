@@ -111,19 +111,20 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
         return stepRepository.getStepLiveData();
     }
 
-    public NonNullLiveData<Float> getKilocalorieConsumptionLiveData() {
-        return locationRepository.getKilocalorieConsumptionLiveData();
+    public NonNullLiveData<Float> getCalorieConsumptionLiveData() {
+        return locationRepository.getCalorieConsumptionLiveData();
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
+        // TODO fix
         new Thread(() -> recordDao.insertRecord(new Record(
                 System.currentTimeMillis(),
                 stopwatchRepository.getSecondLiveData().getValue(),
                 locationRepository.getTotalTravelDistanceLiveData().getValue(),
                 locationRepository.getAverageSpeedLiveData().getValue(),
                 stepRepository.getStepLiveData().getValue(),
-                locationRepository.getKilocalorieConsumptionLiveData().getValue()))).start();
+                locationRepository.getCalorieConsumptionLiveData().getValue()))).start();
 
         return super.onUnbind(intent);
     }

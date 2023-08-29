@@ -44,7 +44,7 @@ public class StatisticFragmentRecyclerViewAdapter extends RecyclerView.Adapter<S
 
         holder.stepTextView.setText(String.format(Locale.getDefault(), "걸음 수 %,d", record.getStep()));
 
-        holder.kiloCalorieTextView.setText(String.format(Locale.getDefault(), "칼로리 소모량 %.1f kcal", record.getKiloCalorie()));
+        holder.kiloCalorieTextView.setText(String.format(Locale.getDefault(), "칼로리 소모량 %.1f kcal", record.getCalorieConsumption()));
     }
 
     @Override
@@ -71,7 +71,7 @@ public class StatisticFragmentRecyclerViewAdapter extends RecyclerView.Adapter<S
             totalTravelDistanceTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_totalTravelDistanceTextView);
             averageSpeedTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_averageSpeedTextView);
             stepTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_stepTextView);
-            kiloCalorieTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_kiloCalorieTextView);
+            kiloCalorieTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_calorieConsumptionTextView);
         }
     }
 }

@@ -29,9 +29,9 @@
         android:text="@string/default_stepTextView_text" />
 
     <TextView
-        android:id="@+id/fragmentStatistic_recyclerView_kiloCalorieTextView"
+        android:id="@+id/fragmentStatistic_recyclerView_calorieConsumptionTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/default_kiloCalorieTextView_text" />
+        android:text="@string/default_calorieConsumptionTextView_text" />
 
 </LinearLayout>
