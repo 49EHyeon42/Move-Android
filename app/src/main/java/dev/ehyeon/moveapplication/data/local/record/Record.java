@@ -1,10 +1,16 @@
 package dev.ehyeon.moveapplication.data.local.record;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import dev.ehyeon.moveapplication.room.BitmapConverter;
 
 @Entity
+@TypeConverters(value = BitmapConverter.class)
 public class Record {
 
     @PrimaryKey
@@ -25,13 +31,17 @@ public class Record {
     @NonNull
     private final Float calorieConsumption; // 칼로리 소모량, 단위: kiloCalorie
 
-    public Record(Long id, @NonNull Integer elapsedTime, @NonNull Float totalTravelDistance, @NonNull Float averageSpeed, @NonNull Integer step, @NonNull Float calorieConsumption) {
+//    @NonNull
+    private final Bitmap image;
+
+    public Record(Long id, @NonNull Integer elapsedTime, @NonNull Float totalTravelDistance, @NonNull Float averageSpeed, @NonNull Integer step, @NonNull Float calorieConsumption, @NonNull Bitmap image) {
         this.id = id;
         this.elapsedTime = elapsedTime;
         this.totalTravelDistance = totalTravelDistance;
         this.averageSpeed = averageSpeed;
         this.step = step;
         this.calorieConsumption = calorieConsumption;
+        this.image = image;
     }
 
     public Long getId() {
@@ -61,5 +71,10 @@ public class Record {
     @NonNull
     public Float getCalorieConsumption() {
         return calorieConsumption;
+    }
+
+    @NonNull
+    public Bitmap getImage() {
+        return image;
     }
 }
