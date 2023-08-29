@@ -25,11 +25,20 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.Locale;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.R;
+import dev.ehyeon.moveapplication.data.local.record.Record;
+import dev.ehyeon.moveapplication.data.local.record.RecordDao;
 import dev.ehyeon.moveapplication.databinding.FragmentHomeBinding;
 import dev.ehyeon.moveapplication.service.TrackingService;
 
+@AndroidEntryPoint
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
+
+    @Inject
+    protected RecordDao recordDao;
 
     private HomeFragmentViewModel viewModel;
     private FragmentHomeBinding binding;
@@ -60,6 +69,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             Intent trackingServiceIntent = new Intent(requireContext(), TrackingService.class);
 
             if (viewModel.getTrackingServiceLiveData().getValue() != null) {
+                new Thread(() -> recordDao.insertRecord(new Record(
+                        System.currentTimeMillis(),
+                        viewModel.getTrackingServiceLiveData().getValue().getSecondLiveData().getValue(),
+                        viewModel.getTrackingServiceLiveData().getValue().getTotalTravelDistanceLiveData().getValue(),
+                        viewModel.getTrackingServiceLiveData().getValue().getAverageSpeedLiveData().getValue(),
+                        viewModel.getTrackingServiceLiveData().getValue().getStepLiveData().getValue(),
+                        viewModel.getTrackingServiceLiveData().getValue().getCalorieConsumptionLiveData().getValue()))).start();
+
                 viewModel.unbindService();
 
                 if (requireContext().stopService(trackingServiceIntent)) {
