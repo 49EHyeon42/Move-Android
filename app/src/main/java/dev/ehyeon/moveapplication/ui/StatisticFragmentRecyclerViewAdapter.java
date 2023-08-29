@@ -68,7 +68,7 @@ public class StatisticFragmentRecyclerViewAdapter extends RecyclerView.Adapter<S
             super(itemView);
 
             elapsedTimeTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_elapsedTimeTextView);
-            totalTravelDistanceTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_totalDistanceTextView);
+            totalTravelDistanceTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_totalTravelDistanceTextView);
             averageSpeedTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_averageSpeedTextView);
             stepTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_stepTextView);
             kiloCalorieTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_kiloCalorieTextView);

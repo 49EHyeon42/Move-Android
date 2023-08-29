@@ -112,11 +112,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             }
 
             trackingService.getSecondLiveData().observe(trackingService, second ->
-                    binding.fragmentHomeTimeTextView
+                    binding.fragmentHomeElapsedTimeTextView
                             .setText(String.format(Locale.getDefault(), "경과 시간 %02d:%02d:%02d", second / 3600, (second % 3600) / 60, second % 60)));
 
             trackingService.getTotalTravelDistanceLiveData().observe(trackingService, totalDistance ->
-                    binding.fragmentHomeTotalDistanceTextView
+                    binding.fragmentHomeTotalTravelDistanceTextView
                             .setText(String.format(Locale.getDefault(), "총 이동 거리 %.0f m", totalDistance)));
 
             trackingService.getAverageSpeedLiveData().observe(trackingService, averageSpeed ->
@@ -127,7 +127,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     binding.fragmentHomeStepTextView.setText(String.format(Locale.getDefault(), "걸음 수 %,d", step)));
 
             trackingService.getKilocalorieConsumptionLiveData().observe(trackingService, calorie ->
-                    binding.fragmentHomeCalorieTextView.setText(String.format(Locale.getDefault(), "칼로리 소모량 %.1f kcal", calorie)));
+                    binding.fragmentHomeKiloCalorieTextView.setText(String.format(Locale.getDefault(), "칼로리 소모량 %.1f kcal", calorie)));
         });
     }
 

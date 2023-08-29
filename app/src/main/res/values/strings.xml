@@ -6,4 +6,10 @@
     <string name="menu_home_statistic">STATISTIC</string>
     <string name="menu_setting_title">SETTING</string>
 
+    <string name="default_elapsedTimeTextView_text">경과 시간 00:00:00</string>
+    <string name="default_totalTravelDistanceTextView_text">총 이동 거리 0 m</string>
+    <string name="default_averageSpeedTextView_text">평균 속력 0.0 km/h</string>
+    <string name="default_stepTextView_text">걸음 수 0</string>
+    <string name="default_kiloCalorieTextView_text">칼로리 소모량 0.0 kcal</string>
+
 </resources>
