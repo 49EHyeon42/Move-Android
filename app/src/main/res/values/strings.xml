@@ -3,6 +3,7 @@
     <string name="app_name">Move Application</string>
 
     <string name="menu_home_title">HOME</string>
+    <string name="menu_home_statistic">STATISTIC</string>
     <string name="menu_setting_title">SETTING</string>
 
 </resources>
