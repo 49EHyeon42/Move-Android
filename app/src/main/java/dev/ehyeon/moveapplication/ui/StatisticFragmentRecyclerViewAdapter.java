@@ -3,6 +3,7 @@ package dev.ehyeon.moveapplication.ui;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,6 +46,8 @@ public class StatisticFragmentRecyclerViewAdapter extends RecyclerView.Adapter<S
         holder.stepTextView.setText(String.format(Locale.getDefault(), "걸음 수 %,d", record.getStep()));
 
         holder.kiloCalorieTextView.setText(String.format(Locale.getDefault(), "칼로리 소모량 %.1f kcal", record.getCalorieConsumption()));
+
+        holder.imageView.setImageBitmap(record.getImage());
     }
 
     @Override
@@ -63,6 +66,7 @@ public class StatisticFragmentRecyclerViewAdapter extends RecyclerView.Adapter<S
         private final TextView averageSpeedTextView;
         private final TextView stepTextView;
         private final TextView kiloCalorieTextView;
+        private final ImageView imageView;
 
         StatisticFragmentRecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -72,6 +76,7 @@ public class StatisticFragmentRecyclerViewAdapter extends RecyclerView.Adapter<S
             averageSpeedTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_averageSpeedTextView);
             stepTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_stepTextView);
             kiloCalorieTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_calorieConsumptionTextView);
+            imageView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_ImageView);
         }
     }
 }

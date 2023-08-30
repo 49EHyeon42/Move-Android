@@ -1,6 +1,7 @@
 package dev.ehyeon.moveapplication.ui;
 
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -29,10 +31,12 @@ import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.databinding.FragmentHomeBinding;
 
 @AndroidEntryPoint
-public class HomeFragment extends Fragment implements OnMapReadyCallback {
+public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.SnapshotReadyCallback {
 
     private HomeFragmentViewModel viewModel;
     private FragmentHomeBinding binding;
+
+    private GoogleMap googleMap;
 
     private Polyline googleMapPolyline;
 
@@ -56,7 +60,17 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             googleMapFragment.getMapAsync(this);
         }
 
-        binding.fragmentHomeTrackingServiceButton.setOnClickListener(ignored -> viewModel.changeTrackingServiceStatus());
+        binding.fragmentHomeTrackingServiceButton.setOnClickListener(ignored -> {
+            if (viewModel.getTrackingServiceLiveData().getValue() == null) {
+                viewModel.startTrackingService();
+            } else {
+                binding.fragmentHomeTrackingServiceButton.setEnabled(false);
+
+                updateGoogleMapByCenterLatLng();
+
+                googleMap.snapshot(this);
+            }
+        });
 
         return binding.getRoot();
     }
@@ -68,6 +82,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.5666612, 126.9783785), 10));
             return;
         }
+
+        this.googleMap = googleMap;
 
         googleMapPolyline = googleMap.addPolyline(new PolylineOptions());
 
@@ -81,6 +97,26 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                                         location == null ?
                                                 new LatLng(37.5666612, 126.9783785) :
                                                 new LatLng(location.getLatitude(), location.getLongitude()), 17)));
+    }
+
+    private void updateGoogleMapByCenterLatLng() {
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+
+        for (LatLng latLng : googleMapPolyline.getPoints()) {
+            boundsBuilder.include(latLng);
+        }
+
+        LatLng centerLatLng = boundsBuilder.build().getCenter();
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(centerLatLng, 17));
+    }
+
+    @Override
+    public void onSnapshotReady(@Nullable Bitmap bitmap) {
+        // TODO refactor, bitmap이 늦게 들어옴, 비동기 처리를 동기 처리로 변환 필요
+        viewModel.stopTrackingService(bitmap);
+
+        binding.fragmentHomeTrackingServiceButton.setEnabled(true);
     }
 
     @Override

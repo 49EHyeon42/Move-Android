@@ -3,6 +3,7 @@ package dev.ehyeon.moveapplication.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -75,25 +76,30 @@ public class HomeFragmentViewModel extends ViewModel implements BaseBroadcastLis
         serviceConnection.disconnectTrackingService();
     }
 
-    public void changeTrackingServiceStatus() {
+    public void startTrackingService() {
+        if (context.startForegroundService(new Intent(context, TrackingService.class)) != null) {
+            bindService();
+        }
+    }
+
+    public void stopTrackingService(Bitmap bitmap) {
         if (serviceConnection.getTrackingServiceLiveData().getValue() == null) {
-            if (context.startForegroundService(new Intent(context, TrackingService.class)) != null) {
-                bindService();
-            }
-        } else {
-            new Thread(() -> recordDao.insertRecord(new Record(
-                    System.currentTimeMillis(),
-                    serviceConnection.getTrackingServiceLiveData().getValue().getSecondLiveData().getValue(),
-                    serviceConnection.getTrackingServiceLiveData().getValue().getTotalTravelDistanceLiveData().getValue(),
-                    serviceConnection.getTrackingServiceLiveData().getValue().getAverageSpeedLiveData().getValue(),
-                    serviceConnection.getTrackingServiceLiveData().getValue().getStepLiveData().getValue(),
-                    serviceConnection.getTrackingServiceLiveData().getValue().getCalorieConsumptionLiveData().getValue()))).start();
+            return;
+        }
 
-            unbindService();
+        new Thread(() -> recordDao.insertRecord(new Record(
+                System.currentTimeMillis(),
+                serviceConnection.getTrackingServiceLiveData().getValue().getSecondLiveData().getValue(),
+                serviceConnection.getTrackingServiceLiveData().getValue().getTotalTravelDistanceLiveData().getValue(),
+                serviceConnection.getTrackingServiceLiveData().getValue().getAverageSpeedLiveData().getValue(),
+                serviceConnection.getTrackingServiceLiveData().getValue().getStepLiveData().getValue(),
+                serviceConnection.getTrackingServiceLiveData().getValue().getCalorieConsumptionLiveData().getValue(),
+                bitmap))).start();
 
-            if (context.stopService(new Intent(context, TrackingService.class))) {
-                disconnectTrackingService();
-            }
+        unbindService();
+
+        if (context.stopService(new Intent(context, TrackingService.class))) {
+            disconnectTrackingService();
         }
     }
 
