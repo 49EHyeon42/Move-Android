@@ -26,7 +26,7 @@ public class SingletonModule {
 
     @Provides
     @Singleton
-    public RecordDao provideMemoDao(MoveDatabase MoveDatabase) {
+    public RecordDao provideRecordDao(MoveDatabase MoveDatabase) {
         return MoveDatabase.recordDao();
     }
 }
