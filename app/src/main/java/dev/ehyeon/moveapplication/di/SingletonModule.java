@@ -11,6 +11,7 @@ import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
+import dev.ehyeon.moveapplication.data.local.record.HourlyRecordDao;
 import dev.ehyeon.moveapplication.data.local.record.RecordDao;
 import dev.ehyeon.moveapplication.room.MoveDatabase;
 
@@ -26,7 +27,13 @@ public class SingletonModule {
 
     @Provides
     @Singleton
-    public RecordDao provideRecordDao(MoveDatabase MoveDatabase) {
-        return MoveDatabase.recordDao();
+    public RecordDao provideRecordDao(MoveDatabase moveDatabase) {
+        return moveDatabase.recordDao();
+    }
+
+    @Provides
+    @Singleton
+    public HourlyRecordDao provideHourlyRecordDao(MoveDatabase moveDatabase) {
+        return moveDatabase.hourlyRecordDao();
     }
 }
