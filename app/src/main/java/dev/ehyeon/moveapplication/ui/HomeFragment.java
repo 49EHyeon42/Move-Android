@@ -20,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -65,6 +66,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             } else {
                 binding.fragmentHomeTrackingServiceButton.setEnabled(false);
 
+                updateGoogleMapByCenterLatLng();
+
                 googleMap.snapshot(this);
             }
         });
@@ -94,6 +97,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                                         location == null ?
                                                 new LatLng(37.5666612, 126.9783785) :
                                                 new LatLng(location.getLatitude(), location.getLongitude()), 17)));
+    }
+
+    private void updateGoogleMapByCenterLatLng() {
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+
+        for (LatLng latLng : googleMapPolyline.getPoints()) {
+            boundsBuilder.include(latLng);
+        }
+
+        LatLng centerLatLng = boundsBuilder.build().getCenter();
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(centerLatLng, 17));
     }
 
     @Override
