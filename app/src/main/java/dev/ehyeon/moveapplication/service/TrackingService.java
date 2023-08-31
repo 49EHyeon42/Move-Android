@@ -1,10 +1,15 @@
 package dev.ehyeon.moveapplication.service;
 
+import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,13 +27,18 @@ import dev.ehyeon.moveapplication.MoveApplication;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.broadcast.BaseBroadcastListener;
 import dev.ehyeon.moveapplication.broadcast.BaseBroadcastReceiver;
+import dev.ehyeon.moveapplication.broadcast.InsertHourlyRecordBroadcastListener;
+import dev.ehyeon.moveapplication.broadcast.InsertHourlyRecordBroadcastReceiver;
+import dev.ehyeon.moveapplication.data.local.record.HourlyRecord;
+import dev.ehyeon.moveapplication.data.local.record.HourlyRecordDao;
 import dev.ehyeon.moveapplication.data.local.step.StepRepository;
 import dev.ehyeon.moveapplication.data.local.stopwatch.StopwatchRepository;
 import dev.ehyeon.moveapplication.data.remote.location.LocationRepository;
 import dev.ehyeon.moveapplication.util.NonNullLiveData;
 
+// TODO refactor
 @AndroidEntryPoint
-public class TrackingService extends LifecycleService implements BaseBroadcastListener {
+public class TrackingService extends LifecycleService implements BaseBroadcastListener, InsertHourlyRecordBroadcastListener {
 
     @Inject
     protected StopwatchRepository stopwatchRepository;
@@ -37,7 +47,14 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
     @Inject
     protected StepRepository stepRepository;
 
+    @Inject
+    protected HourlyRecordDao hourlyRecordDao;
+
     private final BaseBroadcastReceiver broadcastReceiver = new BaseBroadcastReceiver(this);
+
+    private final BroadcastReceiver insertHourlyRecordBroadcastReceiver = new InsertHourlyRecordBroadcastReceiver(this);
+
+    private PendingIntent pendingIntent;
 
     @Override
     public void onCreate() {
@@ -47,6 +64,9 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
                 .getInstance(this)
                 .registerReceiver(broadcastReceiver,
                         new IntentFilter(TrackingServiceAction.IS_TRACKING_SERVICE_RUNNING.getAction()));
+
+        registerReceiver(insertHourlyRecordBroadcastReceiver,
+                new IntentFilter(TrackingServiceAction.INSERT_HOURLY_RECORD.getAction()));
     }
 
     @Override
@@ -55,6 +75,11 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
             Intent responseIntent = new Intent(TrackingServiceAction.TRACKING_SERVICE_IS_RUNNING.getAction());
             LocalBroadcastManager.getInstance(TrackingService.this).sendBroadcast(responseIntent);
         }
+    }
+
+    @Override
+    public void onBroadcastReceive() {
+        insertOrUpdateHourlyRecord();
     }
 
     @Override
@@ -67,6 +92,8 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
         locationRepository.startLocationUpdate(this);
         stepRepository.startStepUpdate(this);
 
+        setAlarmBroadcastReceiver();
+
         return START_NOT_STICKY;
     }
 
@@ -76,6 +103,16 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
                 .setContentText("Test Service Running")
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .build();
+    }
+
+    private void setAlarmBroadcastReceiver() {
+        AlarmManager alarmManager = getSystemService(AlarmManager.class);
+
+        Intent intent = new Intent(TrackingServiceAction.INSERT_HOURLY_RECORD.getAction());
+
+        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, SystemClock.elapsedRealtime() + 60 * 1000, 60 * 1000, pendingIntent);
     }
 
     @Nullable
@@ -124,5 +161,84 @@ public class TrackingService extends LifecycleService implements BaseBroadcastLi
         stopwatchRepository.stopStopwatch();
         locationRepository.stopLocationUpdate(this);
         stepRepository.stopStepUpdate(this);
+
+        insertOrUpdateHourlyRecord();
+
+        getSystemService(AlarmManager.class).cancel(pendingIntent);
+
+        unregisterReceiver(insertHourlyRecordBroadcastReceiver);
+    }
+
+    private boolean existsPreviousHourlyRecord;
+    private float previousTotalTravelDistance;
+    private float previousAverageSpeed;
+    private int previousStep;
+    private float previousCalorieConsumption;
+
+    private void insertOrUpdateHourlyRecord() {
+        long id = truncateToHour(System.currentTimeMillis());
+
+        float totalTravelDistance1 = getTotalTravelDistanceLiveData().getValue();
+        float averageSpeed1 = getAverageSpeedLiveData().getValue();
+        int step1 = getStepLiveData().getValue();
+        float calorieConsumption1 = getCalorieConsumptionLiveData().getValue();
+
+        float totalTravelDistance2 = totalTravelDistance1 - previousTotalTravelDistance;
+        float averageSpeed2 = averageSpeed1 - previousAverageSpeed;
+        int step2 = step1 - previousStep;
+        float calorieConsumption2 = calorieConsumption1 - previousCalorieConsumption;
+
+        Handler handler = new Handler();
+
+        new Thread(() -> {
+            boolean result = hourlyRecordDao.existsHourlyRecordById(id);
+
+            handler.post(() -> {
+                if (result) {
+                    if (existsPreviousHourlyRecord) {
+                        new Thread(() -> hourlyRecordDao.updateHourlyRecordById(
+                                id,
+                                totalTravelDistance2,
+                                averageSpeed2,
+                                step2,
+                                calorieConsumption2)).start();
+                    } else {
+                        new Thread(() -> hourlyRecordDao.updateHourlyRecordById(
+                                id,
+                                totalTravelDistance1,
+                                averageSpeed1,
+                                step1,
+                                calorieConsumption1)).start();
+                    }
+                } else {
+                    if (existsPreviousHourlyRecord) {
+                        new Thread(() -> hourlyRecordDao.insertHourlyRecord(new HourlyRecord(
+                                id,
+                                totalTravelDistance2,
+                                averageSpeed2,
+                                step2,
+                                calorieConsumption2))).start();
+                    } else {
+                        new Thread(() -> hourlyRecordDao.insertHourlyRecord(new HourlyRecord(
+                                id,
+                                totalTravelDistance1,
+                                averageSpeed1,
+                                step1,
+                                calorieConsumption1))).start();
+                    }
+                }
+
+                existsPreviousHourlyRecord = true;
+
+                previousTotalTravelDistance = totalTravelDistance1;
+                previousAverageSpeed = averageSpeed1;
+                previousStep = step1;
+                previousCalorieConsumption = calorieConsumption1;
+            });
+        }).start();
+    }
+
+    private long truncateToHour(long milliseconds) {
+        return (milliseconds / 3600000) * 3600000;
     }
 }
