@@ -5,10 +5,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/fragmentStatisticGraph_lineChart"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="graph" />
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
