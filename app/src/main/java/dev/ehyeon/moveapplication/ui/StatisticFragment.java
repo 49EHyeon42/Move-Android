@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -41,6 +42,12 @@ public class StatisticFragment extends Fragment {
             recyclerViewAdapter.updateItem(records);
             recyclerViewAdapter.notifyDataSetChanged();
         });
+
+        List<Fragment> fragmentList = new ArrayList<>();
+        fragmentList.add(new StatisticCycleFragment());
+        fragmentList.add(new StatisticGraphFragment());
+
+        binding.fragmentStatisticViewPager2.setAdapter(new StatisticViewPager2Adapter(this, fragmentList));
 
         return binding.getRoot();
     }
