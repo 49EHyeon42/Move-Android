@@ -14,6 +14,7 @@ import dev.ehyeon.moveapplication.room.BitmapConverter;
 public class Record {
 
     @PrimaryKey
+    @NonNull
     private final Long id;
 
     @NonNull
@@ -31,10 +32,10 @@ public class Record {
     @NonNull
     private final Float calorieConsumption; // 칼로리 소모량, 단위: kiloCalorie
 
-//    @NonNull
+    @NonNull
     private final Bitmap image;
 
-    public Record(Long id, @NonNull Integer elapsedTime, @NonNull Float totalTravelDistance, @NonNull Float averageSpeed, @NonNull Integer step, @NonNull Float calorieConsumption, @NonNull Bitmap image) {
+    public Record(@NonNull Long id, @NonNull Integer elapsedTime, @NonNull Float totalTravelDistance, @NonNull Float averageSpeed, @NonNull Integer step, @NonNull Float calorieConsumption, @NonNull Bitmap image) {
         this.id = id;
         this.elapsedTime = elapsedTime;
         this.totalTravelDistance = totalTravelDistance;
@@ -44,6 +45,7 @@ public class Record {
         this.image = image;
     }
 
+    @NonNull
     public Long getId() {
         return id;
     }

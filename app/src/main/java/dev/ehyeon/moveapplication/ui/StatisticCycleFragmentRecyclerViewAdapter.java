@@ -15,25 +15,25 @@ import java.util.Locale;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.data.local.record.Record;
 
-public class StatisticFragmentRecyclerViewAdapter extends RecyclerView.Adapter<StatisticFragmentRecyclerViewAdapter.StatisticFragmentRecyclerViewHolder> {
+public class StatisticCycleFragmentRecyclerViewAdapter extends RecyclerView.Adapter<StatisticCycleFragmentRecyclerViewAdapter.StatisticCycleFragmentRecyclerViewHolder> {
 
     private List<Record> recordList;
 
-    public StatisticFragmentRecyclerViewAdapter(List<Record> recordList) {
+    public StatisticCycleFragmentRecyclerViewAdapter(List<Record> recordList) {
         this.recordList = recordList;
     }
 
     @NonNull
     @Override
-    public StatisticFragmentRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public StatisticCycleFragmentRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_statistic_recycler_item, parent, false);
 
-        return new StatisticFragmentRecyclerViewHolder(view);
+        return new StatisticCycleFragmentRecyclerViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull StatisticFragmentRecyclerViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull StatisticCycleFragmentRecyclerViewHolder holder, int position) {
         Record record = recordList.get(position);
 
         int elapsedTime = record.getElapsedTime();
@@ -59,7 +59,7 @@ public class StatisticFragmentRecyclerViewAdapter extends RecyclerView.Adapter<S
         this.recordList = recordList;
     }
 
-    protected static class StatisticFragmentRecyclerViewHolder extends RecyclerView.ViewHolder {
+    protected static class StatisticCycleFragmentRecyclerViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView elapsedTimeTextView;
         private final TextView totalTravelDistanceTextView;
@@ -68,7 +68,7 @@ public class StatisticFragmentRecyclerViewAdapter extends RecyclerView.Adapter<S
         private final TextView kiloCalorieTextView;
         private final ImageView imageView;
 
-        StatisticFragmentRecyclerViewHolder(@NonNull View itemView) {
+        StatisticCycleFragmentRecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
 
             elapsedTimeTextView = itemView.findViewById(R.id.fragmentStatistic_recyclerView_elapsedTimeTextView);

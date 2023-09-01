@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -31,16 +31,11 @@ public class StatisticFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentStatisticBinding.inflate(inflater, container, false);
 
-        StatisticFragmentRecyclerViewAdapter recyclerViewAdapter = new StatisticFragmentRecyclerViewAdapter(new ArrayList<>());
+        List<Fragment> fragmentList = new ArrayList<>();
+        fragmentList.add(new StatisticCycleFragment());
+        fragmentList.add(new StatisticGraphFragment());
 
-        binding.fragmentStatisticRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.fragmentStatisticRecyclerView.setAdapter(recyclerViewAdapter);
-
-        // TODO refactor record -> recordDto
-        recordDao.selectAllRecordLiveData().observe(getViewLifecycleOwner(), records -> {
-            recyclerViewAdapter.updateItem(records);
-            recyclerViewAdapter.notifyDataSetChanged();
-        });
+        binding.fragmentStatisticViewPager2.setAdapter(new StatisticViewPager2Adapter(this, fragmentList));
 
         return binding.getRoot();
     }

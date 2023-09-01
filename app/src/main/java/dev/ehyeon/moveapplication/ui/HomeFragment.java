@@ -99,6 +99,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                                                 new LatLng(location.getLatitude(), location.getLongitude()), 17)));
     }
 
+    // TODO fix: java.lang.IllegalStateException: no included points
     private void updateGoogleMapByCenterLatLng() {
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
 
