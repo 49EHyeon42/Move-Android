@@ -1,5 +1,6 @@
 package dev.ehyeon.moveapplication.ui;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -35,6 +37,13 @@ public class StatisticCycleFragment extends Fragment {
 
         binding.fragmentStatisticCycleRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.fragmentStatisticCycleRecyclerView.setAdapter(recyclerViewAdapter);
+        binding.fragmentStatisticCycleRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
+                outRect.bottom = 10; // 아이템간 간격
+            }
+        });
 
         recordDao.selectAllRecordLiveData().observe(getViewLifecycleOwner(), recordList -> {
             recyclerViewAdapter.updateItem(recordList);
