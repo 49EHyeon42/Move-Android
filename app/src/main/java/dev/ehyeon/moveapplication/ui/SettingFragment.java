@@ -21,18 +21,28 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import dev.ehyeon.moveapplication.R;
+import dev.ehyeon.moveapplication.data.remote.firebase.FirebaseAuthenticationRepository;
 import dev.ehyeon.moveapplication.databinding.FragmentSettingBinding;
 
 public class SettingFragment extends Fragment {
 
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuthenticationRepository firebaseAuthenticationRepository;
+
     private FragmentSettingBinding binding;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuthenticationRepository = new FirebaseAuthenticationRepository(FirebaseAuth.getInstance());
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentSettingBinding.inflate(inflater, container, false);
-
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
         ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -54,11 +64,13 @@ public class SettingFragment extends Fragment {
 
         binding.fragmentSettingSignInButton.setOnClickListener(ignored -> activityResultLauncher.launch(
                 GoogleSignIn.getClient(requireContext(),
-                                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                        .requestIdToken(getString(R.string.default_web_client_id))
-                                        .requestEmail()
-                                        .build())
-                        .getSignInIntent()));
+                        new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                .requestIdToken(getString(R.string.default_web_client_id))
+                                .requestEmail()
+                                .build()).getSignInIntent()));
+
+        firebaseAuthenticationRepository.getFirebaseUser().observe(getViewLifecycleOwner(), firebaseUser ->
+                binding.fragmentSettingEmailTextView.setText(firebaseUser == null ? "null" : firebaseUser.getEmail()));
 
         return binding.getRoot();
     }
