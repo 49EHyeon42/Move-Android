@@ -38,6 +38,10 @@
         </activity>
 
         <activity
+            android:name=".ui.sign.SignUpActivity"
+            android:theme="@style/Theme.MoveApplication" />
+
+        <activity
             android:name=".ui.MainActivity"
             android:exported="true">
 
