@@ -2,6 +2,13 @@
 
     <string name="app_name">Move Application</string>
 
+    <string name="ignore">ignore</string>
+
+    <string name="email">email</string>
+    <string name="password">password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+
     <string name="menu_home_title">HOME</string>
     <string name="menu_home_statistic">STATISTIC</string>
     <string name="menu_setting_title">SETTING</string>
