@@ -2,6 +2,7 @@ package dev.ehyeon.moveapplication.ui.sign;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,13 +32,25 @@ public class SignUpActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(SignUpActivityViewModel.class);
 
-        binding.signUpActivitySignUpButton.setOnClickListener(ignored ->
-                viewModel.signUp(binding.signUpActivityEmailEditText.getText().toString(), binding.signUpActivityPasswordEditText.getText().toString()));
+        binding.signUpActivitySignUpButton.setOnClickListener(view -> {
+            view.setEnabled(false);
 
-        viewModel.getSucceedsSignUp().observe(this, succeedsSignUp -> {
-            if (succeedsSignUp) {
+            viewModel.signUp(binding.signUpActivityEmailEditText.getText().toString(), binding.signUpActivityPasswordEditText.getText().toString());
+        });
+
+        viewModel.getSignUpStatusCode().observe(this, signUpStatusCode -> {
+            if (signUpStatusCode == 200) {
+                Toast.makeText(this, "회원가입 성공", Toast.LENGTH_SHORT).show();
                 finish();
+            } else if (signUpStatusCode == 400) {
+                Toast.makeText(this, "부적절한 입력", Toast.LENGTH_SHORT).show();
+            } else if (signUpStatusCode == 409) {
+                Toast.makeText(this, "중복된 이메일", Toast.LENGTH_SHORT).show();
+            } else if (signUpStatusCode == -1) {
+                Toast.makeText(this, "네트워크 또는 서버 에러", Toast.LENGTH_SHORT).show();
             }
+
+            binding.signUpActivitySignUpButton.setEnabled(true);
         });
     }
 

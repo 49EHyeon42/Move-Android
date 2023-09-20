@@ -1,7 +1,5 @@
 package dev.ehyeon.moveapplication.ui.sign;
 
-import android.util.Log;
-
 import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
@@ -22,7 +20,7 @@ public class SignUpActivityViewModel extends ViewModel {
 
     private final SignService signService;
 
-    private final NonNullMutableLiveData<Boolean> succeedsSignUp = new NonNullMutableLiveData<>(false);
+    private final NonNullMutableLiveData<Integer> signUpStatusCode = new NonNullMutableLiveData<>(0);
 
     @Inject
     public SignUpActivityViewModel(SignService signService) {
@@ -33,23 +31,17 @@ public class SignUpActivityViewModel extends ViewModel {
         signService.signUp(new SignUpRequest(email, password)).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Log.i(TAG, "onResponse: ");
-                } else {
-                    Log.i(TAG, "onResponse: " + response.code() + " " + response.errorBody());
-                }
-
-                succeedsSignUp.setValue(response.isSuccessful());
+                signUpStatusCode.setValue(response.code());
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.i(TAG, "onFailure: " + t.getMessage());
+                signUpStatusCode.setValue(-1);
             }
         });
     }
 
-    public NonNullLiveData<Boolean> getSucceedsSignUp() {
-        return succeedsSignUp;
+    public NonNullLiveData<Integer> getSignUpStatusCode() {
+        return signUpStatusCode;
     }
 }
