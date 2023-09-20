@@ -10,6 +10,9 @@ public interface SignService {
     @GET(".")
     Call<String> root();
 
+    @POST("/api/signin")
+    Call<SignInResponse> signIn(@Body SignInRequest request);
+
     @POST("/api/signup")
     Call<Void> signUp(@Body SignUpRequest request);
 }
