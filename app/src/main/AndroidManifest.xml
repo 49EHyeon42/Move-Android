@@ -8,6 +8,7 @@
     <!-- Add Location Permission -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".MoveApplication"
@@ -19,6 +20,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MoveApplication.SplashScreen"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
         <!-- Add google maps API meta-data -->
@@ -27,7 +29,7 @@
             android:value="${GOOGLE_MAPS_API_KEY}" />
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.sign.SignActivity"
             android:exported="true">
 
             <intent-filter>
@@ -36,6 +38,14 @@
             </intent-filter>
 
         </activity>
+
+        <activity
+            android:name=".ui.sign.SignUpActivity"
+            android:theme="@style/Theme.MoveApplication" />
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:theme="@style/Theme.MoveApplication" />
 
         <service android:name=".service.TrackingService" />
 
