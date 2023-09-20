@@ -1,6 +1,8 @@
 package dev.ehyeon.moveapplication.ui.sign;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -16,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.data.remote.retrofit.sign.SignService;
 import dev.ehyeon.moveapplication.databinding.SignActivityBinding;
+import dev.ehyeon.moveapplication.ui.MainActivity;
 
 @AndroidEntryPoint
 public class SignActivity extends AppCompatActivity {
@@ -40,15 +43,18 @@ public class SignActivity extends AppCompatActivity {
         binding.signActivitySignInButton.setOnClickListener(view -> {
             view.setEnabled(false);
 
-            viewModel.signIn(binding.signActivityEmailEditText.getText().toString(), binding.signActivityPasswordEditText.getText().toString());
+            viewModel.signIn(this, binding.signActivityEmailEditText.getText().toString(), binding.signActivityPasswordEditText.getText().toString());
         });
 
         binding.signActivitySignUpButton.setOnClickListener(ignored -> startActivity(new Intent(this, SignUpActivity.class)));
 
         viewModel.getSignInStatusCode().observe(this, signInStatusCode -> {
             if (signInStatusCode == 200) {
-                Toast.makeText(this, "회원가입 성공", Toast.LENGTH_SHORT).show();
-                finish();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                startActivity(intent);
             } else if (signInStatusCode == 400) {
                 Toast.makeText(this, "부적절한 입력", Toast.LENGTH_SHORT).show();
             } else if (signInStatusCode == 401) {
@@ -59,5 +65,15 @@ public class SignActivity extends AppCompatActivity {
 
             binding.signActivitySignInButton.setEnabled(true);
         });
+
+        SharedPreferences sharedPreferences = getSharedPreferences("move", Context.MODE_PRIVATE);
+
+        if (sharedPreferences.getString("access token", null) != null) {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            startActivity(intent);
+        }
     }
 }

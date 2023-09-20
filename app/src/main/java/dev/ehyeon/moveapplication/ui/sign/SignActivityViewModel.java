@@ -1,5 +1,7 @@
 package dev.ehyeon.moveapplication.ui.sign;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.ViewModel;
@@ -30,12 +32,17 @@ public class SignActivityViewModel extends ViewModel {
         this.signService = signService;
     }
 
-    public void signIn(String email, String password) {
+    public void signIn(Context context, String email, String password) {
         signService.signIn(new SignInRequest(email, password)).enqueue(new Callback<SignInResponse>() {
             @Override
             public void onResponse(Call<SignInResponse> call, Response<SignInResponse> response) {
                 if (response.code() == 200) {
-                    Log.i(TAG, "onResponse: " + response.body().getAccessToken());
+                    SharedPreferences sharedPreferences = context.getSharedPreferences("move", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("access token", response.body().getAccessToken());
+                    editor.apply();
+
+                    Log.i(TAG, "onResponse: " + sharedPreferences.getString("access token", null));
                 }
 
                 signInStatusCode.setValue(response.code());
