@@ -9,9 +9,9 @@ import androidx.lifecycle.ViewModel;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import dev.ehyeon.moveapplication.data.remote.retrofit.sign.SignInRequest;
-import dev.ehyeon.moveapplication.data.remote.retrofit.sign.SignInResponse;
-import dev.ehyeon.moveapplication.data.remote.retrofit.sign.SignService;
+import dev.ehyeon.moveapplication.data.remote.sign.SignInRequest;
+import dev.ehyeon.moveapplication.data.remote.sign.SignInResponse;
+import dev.ehyeon.moveapplication.data.remote.sign.SignService;
 import dev.ehyeon.moveapplication.util.NonNullLiveData;
 import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
 import retrofit2.Call;

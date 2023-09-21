@@ -16,7 +16,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.R;
-import dev.ehyeon.moveapplication.data.remote.retrofit.sign.SignService;
+import dev.ehyeon.moveapplication.data.remote.sign.SignService;
 import dev.ehyeon.moveapplication.databinding.SignActivityBinding;
 import dev.ehyeon.moveapplication.ui.MainActivity;
 

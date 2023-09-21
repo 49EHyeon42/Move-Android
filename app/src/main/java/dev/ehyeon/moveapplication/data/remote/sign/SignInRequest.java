@@ -1,8 +1,8 @@
-package dev.ehyeon.moveapplication.data.remote.retrofit.sign;
+package dev.ehyeon.moveapplication.data.remote.sign;
 
 import androidx.annotation.NonNull;
 
-public class SignUpRequest {
+public class SignInRequest {
 
     @NonNull
     private final String email;
@@ -10,7 +10,7 @@ public class SignUpRequest {
     @NonNull
     private final String password;
 
-    public SignUpRequest(@NonNull String email, @NonNull String password) {
+    public SignInRequest(@NonNull String email, @NonNull String password) {
         this.email = email;
         this.password = password;
     }

@@ -1,4 +1,4 @@
-package dev.ehyeon.moveapplication.data.remote.retrofit.sign;
+package dev.ehyeon.moveapplication.data.remote.sign;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

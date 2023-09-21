@@ -1,4 +1,4 @@
-package dev.ehyeon.moveapplication.data.remote.retrofit.sign;
+package dev.ehyeon.moveapplication.data.remote.sign;
 
 import com.google.gson.annotations.SerializedName;
 
