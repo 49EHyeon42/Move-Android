@@ -103,13 +103,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
         this.googleMap = googleMap;
 
-        googleMap.setOnCameraMoveListener(() -> {
+        googleMap.setOnCameraMoveStartedListener(i -> {
             for (Marker marker : markers) {
                 marker.remove();
             }
 
             markers.clear();
+        });
 
+        googleMap.setOnCameraIdleListener(() -> {
             LatLng northeast = googleMap.getProjection().getVisibleRegion().latLngBounds.northeast;
             LatLng southwest = googleMap.getProjection().getVisibleRegion().latLngBounds.southwest;
 
