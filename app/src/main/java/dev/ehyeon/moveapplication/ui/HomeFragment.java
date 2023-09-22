@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -151,6 +152,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                     });
         });
 
+        googleMap.setOnMarkerClickListener(marker -> {
+            Toast.makeText(requireContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
+
+            return true;
+        });
+
         googleMapPolyline = googleMap.addPolyline(new PolylineOptions());
 
         googleMap.setMyLocationEnabled(true);
@@ -206,7 +213,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             trackingService.getLatLngListLiveData().observe(trackingService, latLngs -> {
                 if (latLngs.size() == 1) {
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngs.get(0), 17));
-                } else if (latLngs.size() > 1){
+                } else if (latLngs.size() > 1) {
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngs.get(latLngs.size() - 1), 17));
                 }
             });
