@@ -1,5 +1,6 @@
 package dev.ehyeon.moveapplication.ui;
 
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -67,6 +68,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         viewModel.onCreateWithContext(requireContext());
     }
 
+    @SuppressLint("MissingPermission")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -80,6 +82,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
         binding.fragmentHomeTrackingServiceButton.setOnClickListener(ignored -> {
             if (viewModel.getTrackingServiceLiveData().getValue() == null) {
+                // 지동 회전 제한
+                googleMap.getUiSettings().setRotateGesturesEnabled(false);
+                // 지도 이동 제한
+                googleMap.getUiSettings().setScrollGesturesEnabled(false);
+                // 지도 줌 제한
+                googleMap.getUiSettings().setZoomGesturesEnabled(false);
+
+                LocationServices.getFusedLocationProviderClient(requireContext())
+                        .getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null)
+                        .addOnSuccessListener(location ->
+                                googleMap.moveCamera(
+                                        CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 17)));
+
                 viewModel.startTrackingService();
             } else {
                 binding.fragmentHomeTrackingServiceButton.setEnabled(false);
@@ -115,6 +130,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             LatLng northeast = googleMap.getProjection().getVisibleRegion().latLngBounds.northeast;
             LatLng southwest = googleMap.getProjection().getVisibleRegion().latLngBounds.southwest;
 
+            // TODO refactor, API 호출이 너무 많음
             moveStopService.getMoveStop(southwest.latitude, southwest.latitude, northeast.latitude, northeast.longitude)
                     .enqueue(new Callback<List<MoveStopResponse>>() {
                         @Override
@@ -167,6 +183,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         // TODO refactor, bitmap이 늦게 들어옴, 비동기 처리를 동기 처리로 변환 필요
         viewModel.stopTrackingService(bitmap);
 
+        // 지동 회전 제한 해제
+        googleMap.getUiSettings().setRotateGesturesEnabled(true);
+        // 지도 이동 제한 해제
+        googleMap.getUiSettings().setScrollGesturesEnabled(true);
+        // 지도 줌 제한 해제
+        googleMap.getUiSettings().setZoomGesturesEnabled(true);
+
         binding.fragmentHomeTrackingServiceButton.setEnabled(true);
     }
 
@@ -179,6 +202,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             if (trackingService == null) {
                 return;
             }
+
+            trackingService.getLatLngListLiveData().observe(trackingService, latLngs -> {
+                if (latLngs.size() == 1) {
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngs.get(0), 17));
+                } else if (latLngs.size() > 1){
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngs.get(latLngs.size() - 1), 17));
+                }
+            });
+
 
             if (googleMapPolyline != null) {
                 trackingService.getLatLngListLiveData().observe(trackingService, latLngs -> googleMapPolyline.setPoints(latLngs));
