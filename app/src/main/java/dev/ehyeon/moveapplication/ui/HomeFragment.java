@@ -3,6 +3,7 @@ package dev.ehyeon.moveapplication.ui;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,22 +22,39 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.R;
+import dev.ehyeon.moveapplication.data.remote.movestop.MoveStopResponse;
+import dev.ehyeon.moveapplication.data.remote.movestop.MoveStopService;
 import dev.ehyeon.moveapplication.databinding.FragmentHomeBinding;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 @AndroidEntryPoint
 public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.SnapshotReadyCallback {
+
+    private static final String TAG = "HomeFragment";
+
+    @Inject
+    protected MoveStopService moveStopService;
 
     private HomeFragmentViewModel viewModel;
     private FragmentHomeBinding binding;
 
     private GoogleMap googleMap;
+    private final List<Marker> markers = new ArrayList<>();
 
     private Polyline googleMapPolyline;
 
@@ -84,6 +102,36 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         }
 
         this.googleMap = googleMap;
+
+        googleMap.setOnCameraMoveListener(() -> {
+            for (Marker marker : markers) {
+                marker.remove();
+            }
+
+            markers.clear();
+
+            LatLng northeast = googleMap.getProjection().getVisibleRegion().latLngBounds.northeast;
+            LatLng southwest = googleMap.getProjection().getVisibleRegion().latLngBounds.southwest;
+
+            moveStopService.getMoveStop(southwest.latitude, southwest.latitude, northeast.latitude, northeast.longitude)
+                    .enqueue(new Callback<List<MoveStopResponse>>() {
+                        @Override
+                        public void onResponse(Call<List<MoveStopResponse>> call, Response<List<MoveStopResponse>> response) {
+                            for (MoveStopResponse moveStopResponse : response.body()) {
+                                Marker marker = googleMap.addMarker(new MarkerOptions()
+                                        .title(moveStopResponse.getName())
+                                        .position(new LatLng(moveStopResponse.getLatitude(), moveStopResponse.getLongitude())));
+
+                                markers.add(marker);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<MoveStopResponse>> call, Throwable t) {
+                            Log.i(TAG, "onFailure: 맵 이동 실패");
+                        }
+                    });
+        });
 
         googleMapPolyline = googleMap.addPolyline(new PolylineOptions());
 
