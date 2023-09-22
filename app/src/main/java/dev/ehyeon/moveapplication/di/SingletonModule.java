@@ -16,6 +16,7 @@ import dagger.hilt.components.SingletonComponent;
 import dev.ehyeon.moveapplication.BuildConfig;
 import dev.ehyeon.moveapplication.data.local.record.HourlyRecordDao;
 import dev.ehyeon.moveapplication.data.local.record.RecordDao;
+import dev.ehyeon.moveapplication.data.remote.movestop.MoveStopService;
 import dev.ehyeon.moveapplication.data.remote.sign.SignService;
 import dev.ehyeon.moveapplication.room.MoveDatabase;
 import retrofit2.Retrofit;
@@ -58,5 +59,11 @@ public class SingletonModule {
     @Singleton
     public SignService provideSignService(Retrofit retrofit) {
         return retrofit.create(SignService.class);
+    }
+
+    @Provides
+    @Singleton
+    public MoveStopService provideMoveStopService(Retrofit retrofit) {
+        return retrofit.create(MoveStopService.class);
     }
 }
