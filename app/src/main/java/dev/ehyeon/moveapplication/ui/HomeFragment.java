@@ -132,10 +132,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             LatLng southwest = googleMap.getProjection().getVisibleRegion().latLngBounds.southwest;
 
             // TODO refactor, API 호출이 너무 많음
-            moveStopService.getMoveStop(southwest.latitude, southwest.latitude, northeast.latitude, northeast.longitude)
+            moveStopService.getMoveStop(southwest.latitude, southwest.longitude, northeast.latitude, northeast.longitude)
                     .enqueue(new Callback<List<MoveStopResponse>>() {
                         @Override
                         public void onResponse(Call<List<MoveStopResponse>> call, Response<List<MoveStopResponse>> response) {
+                            if (response.body() == null) {
+                                Log.i(TAG, "onResponse: response body is null " + response.code());
+
+                                return;
+                            }
+
                             for (MoveStopResponse moveStopResponse : response.body()) {
                                 Marker marker = googleMap.addMarker(new MarkerOptions()
                                         .title(moveStopResponse.getName())
@@ -164,12 +170,17 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
         LocationServices.getFusedLocationProviderClient(requireContext())
                 .getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null)
-                .addOnSuccessListener(location ->
-                        googleMap.moveCamera(
-                                CameraUpdateFactory.newLatLngZoom(
-                                        location == null ?
-                                                new LatLng(37.5666612, 126.9783785) :
-                                                new LatLng(location.getLatitude(), location.getLongitude()), 17)));
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        Log.i(TAG, "latitude: " + location.getLatitude() + ", longitude: " + location.getLongitude());
+                    }
+
+                    googleMap.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                    location == null ?
+                                            new LatLng(37.5666612, 126.9783785) :
+                                            new LatLng(location.getLatitude(), location.getLongitude()), 17));
+                });
     }
 
     // TODO fix: java.lang.IllegalStateException: no included points
