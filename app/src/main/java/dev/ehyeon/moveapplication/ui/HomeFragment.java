@@ -1,6 +1,7 @@
 package dev.ehyeon.moveapplication.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -37,8 +39,8 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.R;
-import dev.ehyeon.moveapplication.data.remote.movestop.MoveStopResponse;
-import dev.ehyeon.moveapplication.data.remote.movestop.MoveStopService;
+import dev.ehyeon.moveapplication.data.remote.visited_move_stop.SearchVisitedMoveStopResponse;
+import dev.ehyeon.moveapplication.data.remote.visited_move_stop.VisitedMoveStopService;
 import dev.ehyeon.moveapplication.databinding.FragmentHomeBinding;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,7 +52,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     private static final String TAG = "HomeFragment";
 
     @Inject
-    protected MoveStopService moveStopService;
+    protected VisitedMoveStopService visitedMoveStopService;
 
     private HomeFragmentViewModel viewModel;
     private FragmentHomeBinding binding;
@@ -131,28 +133,38 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             LatLng northeast = googleMap.getProjection().getVisibleRegion().latLngBounds.northeast;
             LatLng southwest = googleMap.getProjection().getVisibleRegion().latLngBounds.southwest;
 
-            // TODO refactor, API 호출이 너무 많음
-            moveStopService.getMoveStop(southwest.latitude, southwest.longitude, northeast.latitude, northeast.longitude)
-                    .enqueue(new Callback<List<MoveStopResponse>>() {
+            visitedMoveStopService.searchVisitedMoveStop(
+                            getActivity().getSharedPreferences("move", Context.MODE_PRIVATE).getString("access token", ""),
+                            southwest.latitude, southwest.longitude, northeast.latitude, northeast.longitude)
+                    .enqueue(new Callback<List<SearchVisitedMoveStopResponse>>() {
                         @Override
-                        public void onResponse(Call<List<MoveStopResponse>> call, Response<List<MoveStopResponse>> response) {
+                        public void onResponse(Call<List<SearchVisitedMoveStopResponse>> call, Response<List<SearchVisitedMoveStopResponse>> response) {
                             if (response.body() == null) {
                                 Log.i(TAG, "onResponse: response body is null " + response.code());
 
                                 return;
                             }
 
-                            for (MoveStopResponse moveStopResponse : response.body()) {
-                                Marker marker = googleMap.addMarker(new MarkerOptions()
-                                        .title(moveStopResponse.getName())
-                                        .position(new LatLng(moveStopResponse.getLatitude(), moveStopResponse.getLongitude())));
+                            for (SearchVisitedMoveStopResponse searchVisitedMoveStopResponse : response.body()) {
+                                Marker marker;
+
+                                if (searchVisitedMoveStopResponse.isVisited()) {
+                                    marker = googleMap.addMarker(new MarkerOptions()
+                                            .title(searchVisitedMoveStopResponse.getName())
+                                            .position(new LatLng(searchVisitedMoveStopResponse.getLatitude(), searchVisitedMoveStopResponse.getLongitude()))
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.visited_marker)));
+                                } else {
+                                    marker = googleMap.addMarker(new MarkerOptions()
+                                            .title(searchVisitedMoveStopResponse.getName())
+                                            .position(new LatLng(searchVisitedMoveStopResponse.getLatitude(), searchVisitedMoveStopResponse.getLongitude())));
+                                }
 
                                 markers.add(marker);
                             }
                         }
 
                         @Override
-                        public void onFailure(Call<List<MoveStopResponse>> call, Throwable t) {
+                        public void onFailure(Call<List<SearchVisitedMoveStopResponse>> call, Throwable t) {
                             Log.i(TAG, "onFailure: 맵 이동 실패");
                         }
                     });
