@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,6 +43,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.R;
+import dev.ehyeon.moveapplication.data.remote.visited_move_stop.SaveOrUpdateVisitedMoveStopRequest;
 import dev.ehyeon.moveapplication.data.remote.visited_move_stop.SearchVisitedMoveStopResponse;
 import dev.ehyeon.moveapplication.data.remote.visited_move_stop.VisitedMoveStopService;
 import dev.ehyeon.moveapplication.databinding.FragmentHomeBinding;
@@ -57,10 +62,17 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     private HomeFragmentViewModel viewModel;
     private FragmentHomeBinding binding;
 
+    private String accessToken;
+
     private GoogleMap googleMap;
     private final List<Marker> markers = new ArrayList<>();
 
     private Polyline googleMapPolyline;
+
+    private double latitude1;
+    private double longitude1;
+    private double latitude2;
+    private double longitude2;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,6 +81,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         viewModel = new ViewModelProvider(this).get(HomeFragmentViewModel.class);
 
         viewModel.onCreateWithContext(requireContext());
+
+        accessToken = requireActivity().getSharedPreferences("move", Context.MODE_PRIVATE).getString("access token", "");
     }
 
     @SuppressLint("MissingPermission")
@@ -133,8 +147,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             LatLng northeast = googleMap.getProjection().getVisibleRegion().latLngBounds.northeast;
             LatLng southwest = googleMap.getProjection().getVisibleRegion().latLngBounds.southwest;
 
+            latitude1 = southwest.latitude;
+            longitude1 = southwest.longitude;
+            latitude2 = northeast.latitude;
+            longitude2 = northeast.longitude;
+
             visitedMoveStopService.searchVisitedMoveStop(
-                            getActivity().getSharedPreferences("move", Context.MODE_PRIVATE).getString("access token", ""),
+                            accessToken,
                             southwest.latitude, southwest.longitude, northeast.latitude, northeast.longitude)
                     .enqueue(new Callback<List<SearchVisitedMoveStopResponse>>() {
                         @Override
@@ -193,6 +212,33 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                                             new LatLng(37.5666612, 126.9783785) :
                                             new LatLng(location.getLatitude(), location.getLongitude()), 17));
                 });
+
+        LocationServices.getFusedLocationProviderClient(requireContext())
+                .requestLocationUpdates(
+                        new LocationRequest.Builder(3000).build(), new LocationCallback() {
+                            @Override
+                            public void onLocationResult(@NonNull LocationResult locationResult) {
+                                Location location = locationResult.getLastLocation();
+
+                                if (location != null) {
+                                    visitedMoveStopService.saveOrUpdateVisitedMoveStop(accessToken, new SaveOrUpdateVisitedMoveStopRequest(
+                                                    location.getLatitude(), location.getLongitude(),
+                                                    latitude1, longitude1,
+                                                    latitude2, longitude2))
+                                            .enqueue(new Callback<Void>() {
+                                                @Override
+                                                public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                                                    Log.i(TAG, "saveOrUpdateVisitedMoveStop code is " + response.code());
+                                                }
+
+                                                @Override
+                                                public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                                                    Log.i(TAG, "saveOrUpdateVisitedMoveStop: 통신 실패");
+                                                }
+                                            });
+                                }
+                            }
+                        }, null);
     }
 
     // TODO fix: java.lang.IllegalStateException: no included points
