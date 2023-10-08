@@ -10,6 +10,12 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Add Notification Permission -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Add Vibrate Permission -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:name=".MoveApplication"
         android:allowBackup="true"

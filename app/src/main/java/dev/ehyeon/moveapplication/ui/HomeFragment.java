@@ -1,6 +1,8 @@
 package dev.ehyeon.moveapplication.ui;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -36,12 +39,15 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import dev.ehyeon.moveapplication.MoveApplication;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.data.remote.visited_move_stop.SaveOrUpdateVisitedMoveStopRequest;
 import dev.ehyeon.moveapplication.data.remote.visited_move_stop.SearchVisitedMoveStopResponse;
@@ -66,6 +72,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     private GoogleMap googleMap;
     private final List<Marker> markers = new ArrayList<>();
+
+    private final Set<String> visitedMarkerNames = new HashSet<>();
 
     private Polyline googleMapPolyline;
 
@@ -168,11 +176,32 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                                 Marker marker;
 
                                 if (searchVisitedMoveStopResponse.isVisited()) {
+                                    if (!visitedMarkerNames.contains(searchVisitedMoveStopResponse.getName())) {
+                                        visitedMarkerNames.add(searchVisitedMoveStopResponse.getName());
+
+                                        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                                            return;
+                                        }
+
+                                        Notification notification = new Notification.Builder(requireContext(), ((MoveApplication) requireActivity().getApplication()).getVisitedMoveStopChannelId())
+                                                .setContentTitle("Move")
+                                                .setContentText(searchVisitedMoveStopResponse.getName() + " 방문!")
+                                                .setSmallIcon(R.drawable.ic_launcher_background)
+                                                .setAutoCancel(true)
+                                                .build();
+
+                                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
+
+                                        notificationManager.notify(49, notification);
+                                    }
+
                                     marker = googleMap.addMarker(new MarkerOptions()
                                             .title(searchVisitedMoveStopResponse.getName())
                                             .position(new LatLng(searchVisitedMoveStopResponse.getLatitude(), searchVisitedMoveStopResponse.getLongitude()))
                                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.visited_marker)));
                                 } else {
+                                    visitedMarkerNames.remove(searchVisitedMoveStopResponse.getName());
+
                                     marker = googleMap.addMarker(new MarkerOptions()
                                             .title(searchVisitedMoveStopResponse.getName())
                                             .position(new LatLng(searchVisitedMoveStopResponse.getLatitude(), searchVisitedMoveStopResponse.getLongitude())));
