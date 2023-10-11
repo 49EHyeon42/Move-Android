@@ -1,4 +1,4 @@
-package dev.ehyeon.moveapplication.ui;
+package dev.ehyeon.moveapplication.ui.record;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +9,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import org.threeten.bp.LocalDate;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.databinding.RecordFragmentBinding;
@@ -33,6 +35,8 @@ public class RecordFragment extends Fragment {
 
             binding.recordFragmentSwipeRefreshLayout.setRefreshing(false);
         });
+
+        binding.recordFragmentCalendarView.setSelectedDate(LocalDate.now());
 
         return binding.getRoot();
     }

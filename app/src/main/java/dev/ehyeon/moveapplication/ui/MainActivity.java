@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.databinding.ActivityMainBinding;
+import dev.ehyeon.moveapplication.ui.record.RecordFragment;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
