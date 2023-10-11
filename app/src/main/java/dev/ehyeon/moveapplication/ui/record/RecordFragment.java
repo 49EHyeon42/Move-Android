@@ -14,6 +14,8 @@ import org.threeten.bp.LocalDate;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.databinding.RecordFragmentBinding;
+import dev.ehyeon.moveapplication.ui.record.calendar_decorator.SaturdayViewDecorator;
+import dev.ehyeon.moveapplication.ui.record.calendar_decorator.SundayViewDecorator;
 
 @AndroidEntryPoint
 public class RecordFragment extends Fragment {
@@ -36,8 +38,14 @@ public class RecordFragment extends Fragment {
             binding.recordFragmentSwipeRefreshLayout.setRefreshing(false);
         });
 
-        binding.recordFragmentCalendarView.setSelectedDate(LocalDate.now());
+        initCalendarView();
 
         return binding.getRoot();
+    }
+
+    private void initCalendarView() {
+        binding.recordFragmentCalendarView.setSelectedDate(LocalDate.now());
+
+        binding.recordFragmentCalendarView.addDecorators(new SaturdayViewDecorator(), new SundayViewDecorator());
     }
 }
