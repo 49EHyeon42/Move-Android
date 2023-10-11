@@ -19,4 +19,9 @@
     <string name="default_stepTextView_text">걸음 수 0</string>
     <string name="default_calorieConsumptionTextView_text">칼로리 소모량 0.0 kcal</string>
 
+    <!-- Record Fragment -->
+    <string name="recordFragment_totalMileage_default_text">마일리지 0 적립</string>
+    <string name="recordFragment_totalTravelDistance_default_text">총 이동 거리 0 km</string>
+    <string name="recordFragment_totalStep_default_text">총 걸음 수 0 걸음</string>
+
 </resources>
