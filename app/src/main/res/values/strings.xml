@@ -10,8 +10,8 @@
     <string name="sign_up">Sign Up</string>
 
     <string name="menu_home_title">HOME</string>
-    <string name="menu_home_statistic">STATISTIC</string>
-    <string name="menu_setting_title">SETTING</string>
+    <string name="menu_record_title">RECORD</string>
+    <string name="menu_statistic_title">STATISTIC</string>
 
     <string name="default_elapsedTimeTextView_text">경과 시간 00:00:00</string>
     <string name="default_totalTravelDistanceTextView_text">총 이동 거리 0 m</string>

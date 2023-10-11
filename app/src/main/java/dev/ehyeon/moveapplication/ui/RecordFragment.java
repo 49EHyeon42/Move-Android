@@ -4,16 +4,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import dev.ehyeon.moveapplication.databinding.FragmentSettingBinding;
+import dagger.hilt.android.AndroidEntryPoint;
+import dev.ehyeon.moveapplication.databinding.RecordFragmentBinding;
 
-public class SettingFragment extends Fragment {
+@AndroidEntryPoint
+public class RecordFragment extends Fragment {
 
-    private FragmentSettingBinding binding;
+    private RecordFragmentBinding binding;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -23,7 +26,13 @@ public class SettingFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentSettingBinding.inflate(inflater, container, false);
+        binding = RecordFragmentBinding.inflate(inflater, container, false);
+
+        binding.recordFragmentSwipeRefreshLayout.setOnRefreshListener(() -> {
+            Toast.makeText(requireContext(), "Test Toast Message", Toast.LENGTH_SHORT).show();
+
+            binding.recordFragmentSwipeRefreshLayout.setRefreshing(false);
+        });
 
         return binding.getRoot();
     }
