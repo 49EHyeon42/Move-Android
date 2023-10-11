@@ -33,7 +33,7 @@ public class StatisticFragment extends Fragment {
 
         List<Fragment> fragmentList = new ArrayList<>();
         fragmentList.add(new StatisticCycleFragment());
-        fragmentList.add(new StatisticGraphFragment());
+        fragmentList.add(new StatisticCalendarFragment());
 
         binding.fragmentStatisticViewPager2.setAdapter(new StatisticViewPager2Adapter(this, fragmentList));
 
