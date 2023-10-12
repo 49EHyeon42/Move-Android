@@ -44,6 +44,15 @@ public class RecordFragment extends Fragment {
             }
         });
 
+        initTextView();
+        initCalendarView();
+
+        viewModel.refreshLayout(requireContext());
+
+        return binding.getRoot();
+    }
+
+    private void initTextView() {
         viewModel.getTotalMileageNonNullLiveData().observe(getViewLifecycleOwner(),
                 totalMileage -> binding.recordFragmentTotalMileageTextView.setText("마일리지 " + totalMileage + " 적립"));
 
@@ -52,12 +61,6 @@ public class RecordFragment extends Fragment {
 
         viewModel.getTotalStepNonNullLiveData().observe(getViewLifecycleOwner(),
                 totalStep -> binding.recordFragmentTotalStepTextView.setText("총 걸음 수 " + totalStep + " 걸음"));
-
-        initCalendarView();
-
-        viewModel.refreshLayout(requireContext());
-
-        return binding.getRoot();
     }
 
     private void initCalendarView() {
