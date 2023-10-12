@@ -2,7 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Add Foreground Service -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- Add Location Permission -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Add Notification Permission -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Add Vibrate Permission -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
+        android:name=".MoveApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -10,11 +25,17 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MoveApplication"
+        android:theme="@style/Theme.MoveApplication.SplashScreen"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
+        <!-- Add google maps API meta-data -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${GOOGLE_MAPS_API_KEY}" />
+
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.sign.SignActivity"
             android:exported="true">
 
             <intent-filter>
@@ -23,6 +44,20 @@
             </intent-filter>
 
         </activity>
+
+        <activity
+            android:name=".ui.sign.SignUpActivity"
+            android:theme="@style/Theme.MoveApplication" />
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:theme="@style/Theme.MoveApplication" />
+
+        <service android:name=".service.TrackingService" />
+
+        <activity
+            android:name=".ui.record.search.SearchRecordActivity"
+            android:theme="@style/Theme.MoveApplication" />
 
     </application>
 

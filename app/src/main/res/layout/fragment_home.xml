@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragmentHome_supportGoogleMapFragment"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/fragmentHome_elapsedTimeTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/default_elapsedTimeTextView_text" />
+
+        <TextView
+            android:id="@+id/fragmentHome_totalTravelDistanceTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/default_totalTravelDistanceTextView_text" />
+
+        <TextView
+            android:id="@+id/fragmentHome_averageSpeedTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/default_averageSpeedTextView_text" />
+
+        <TextView
+            android:id="@+id/fragmentHome_stepTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/default_stepTextView_text" />
+
+        <TextView
+            android:id="@+id/fragmentHome_calorieConsumptionTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/default_calorieConsumptionTextView_text" />
+
+        <Button
+            android:id="@+id/fragmentHome_trackingServiceButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</layout>

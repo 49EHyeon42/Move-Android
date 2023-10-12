@@ -6,4 +6,12 @@
     </style>
 
     <style name="Theme.MoveApplication" parent="Base.Theme.MoveApplication" />
+
+    <!-- splash screen -->
+    <style name="Theme.MoveApplication.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.Material3.DayNight.NoActionBar</item>
+    </style>
+
 </resources>
