@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
@@ -17,6 +18,7 @@ import dev.ehyeon.moveapplication.data.remote.record.SearchRecordResponse;
 public class SearchRecordActivityRecyclerViewAdapter extends RecyclerView.Adapter<SearchRecordActivityRecyclerViewAdapter.SearchRecordActivityRecyclerViewHolder> {
 
     private List<SearchRecordResponse> list;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     public SearchRecordActivityRecyclerViewAdapter(List<SearchRecordResponse> list) {
         this.list = list;
@@ -35,12 +37,21 @@ public class SearchRecordActivityRecyclerViewAdapter extends RecyclerView.Adapte
     public void onBindViewHolder(@NonNull SearchRecordActivityRecyclerViewHolder holder, int position) {
         SearchRecordResponse searchRecordResponse = list.get(position);
 
+
+        String elapsedTimeString;
+        if (searchRecordResponse.getElapsedTime() >= 60) {
+            elapsedTimeString = searchRecordResponse.getElapsedTime() / 60 + "분 " + searchRecordResponse.getElapsedTime() % 60 + "초";
+        } else {
+            elapsedTimeString = searchRecordResponse.getElapsedTime() + "초";
+        }
+
         holder.savedDateTextView.setText(String.format(Locale.getDefault(), "저장 시간 : " + searchRecordResponse.getSavedDate()));
-        holder.elapsedTimeTextView.setText(String.format(Locale.getDefault(), "경과 시간 : " + searchRecordResponse.getElapsedTime()));
-        holder.totalTravelDistanceTextView.setText(String.format(Locale.getDefault(), "총 이동 거리 : " + searchRecordResponse.getTotalTravelDistance()));
-        holder.averageSpeedTextView.setText(String.format(Locale.getDefault(), "평균 속력 : " + searchRecordResponse.getAverageSpeed()));
-        holder.stepTextView.setText(String.format(Locale.getDefault(), "걸음 수 : " + searchRecordResponse.getAverageSpeed()));
-        holder.calorieConsumptionTextView.setText(String.format(Locale.getDefault(), "칼로리 소모량 : " + searchRecordResponse.getCalorieConsumption()));
+        holder.elapsedTimeTextView.setText(String.format(Locale.getDefault(), "경과 시간 : " + elapsedTimeString));
+        holder.totalTravelDistanceTextView.setText(String.format(Locale.getDefault(), "총 이동 거리 : " + searchRecordResponse.getTotalTravelDistance() + " m"));
+        holder.averageSpeedTextView.setText(String.format(Locale.getDefault(), "평균 속력 : " + searchRecordResponse.getAverageSpeed() + " km"));
+        holder.stepTextView.setText(String.format(Locale.getDefault(), "걸음 수 : " + searchRecordResponse.getStep() + " 걸음"));
+        holder.calorieConsumptionTextView.setText(
+                "칼로리 소모량 : " + Math.round(searchRecordResponse.getCalorieConsumption() * 10) / 10.0 + " kcal");
     }
 
     @Override

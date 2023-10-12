@@ -52,6 +52,10 @@ public class RecordFragment extends Fragment {
         viewModel.getRefreshStatusNonNullLiveData().observe(getViewLifecycleOwner(), refreshStatus -> {
             if (refreshStatus) {
                 binding.recordFragmentSwipeRefreshLayout.setRefreshing(false);
+
+                CalendarDay currentCalendarDay = binding.recordFragmentCalendarView.getSelectedDate();
+
+                viewModel.searchRecordByDate(requireContext(), currentCalendarDay.getYear(), currentCalendarDay.getMonth());
             }
         });
 
