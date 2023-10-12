@@ -7,10 +7,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
+import java.time.YearMonth;
+import java.util.List;
+import java.util.Locale;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import dev.ehyeon.moveapplication.data.remote.record.RecordService;
+import dev.ehyeon.moveapplication.data.remote.record.SearchRecordResponse;
 import dev.ehyeon.moveapplication.data.remote.record.SearchTotalRecordResponse;
 import dev.ehyeon.moveapplication.util.NonNullLiveData;
 import dev.ehyeon.moveapplication.util.NonNullMutableLiveData;
@@ -52,6 +57,8 @@ public class RecordFragmentViewModel extends ViewModel {
                         Log.w(TAG, "body is null.");
 
                         Toast.makeText(context, "잠시 후 다시 시도하십시오.", Toast.LENGTH_SHORT).show();
+
+                        return;
                     }
 
                     totalMileageNonNullMutableLiveData.setValue(response.body().getTotalMileage());
@@ -91,5 +98,43 @@ public class RecordFragmentViewModel extends ViewModel {
 
     public NonNullLiveData<Double> getTotalStepNonNullLiveData() {
         return totalStepNonNullMutableLiveData;
+    }
+
+    public void searchRecordByDate(Context context, int year, int month) {
+        String accessToken = context.getSharedPreferences("move", Context.MODE_PRIVATE).getString("access token", "");
+
+        String from = year + "-" + String.format(Locale.getDefault(), "%02d", month) + "-01T00:00:00";
+        String to = year + "-" + String.format(Locale.getDefault(), "%02d", month) + "-" + String.format(Locale.getDefault(), "%02d", YearMonth.of(year, month).lengthOfMonth()) + "T00:00:00";
+
+        recordService.searchRecordByYearAndMonth(accessToken, from, to).enqueue(new Callback<List<SearchRecordResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<SearchRecordResponse>> call, @NonNull Response<List<SearchRecordResponse>> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() == null) {
+                        Log.w(TAG, "body is null.");
+
+                        Toast.makeText(context, "잠시 후 다시 시도하십시오.", Toast.LENGTH_SHORT).show();
+
+                        return;
+                    }
+
+                    // TODO clear, test
+                    for (SearchRecordResponse r : response.body()) {
+                        Log.w(TAG, "searchRecordResponse: " + r.getSavedDate());
+                    }
+                } else {
+                    Log.w(TAG, "searchRecordByDate failed, response code is " + response.code());
+
+                    Toast.makeText(context, "잠시 후 다시 시도하십시오.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<SearchRecordResponse>> call, @NonNull Throwable t) {
+                Log.w(TAG, t.getMessage());
+
+                Toast.makeText(context, "잠시 후 다시 시도하십시오.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

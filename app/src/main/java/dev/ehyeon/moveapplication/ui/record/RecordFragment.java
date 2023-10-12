@@ -67,5 +67,8 @@ public class RecordFragment extends Fragment {
         binding.recordFragmentCalendarView.setSelectedDate(LocalDate.now());
 
         binding.recordFragmentCalendarView.addDecorators(new SaturdayViewDecorator(), new SundayViewDecorator());
+
+        binding.recordFragmentCalendarView.setOnMonthChangedListener((widget, date) ->
+                viewModel.searchRecordByDate(requireContext(), date.getYear(), date.getMonth()));
     }
 }
