@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.R;
 import dev.ehyeon.moveapplication.databinding.ActivityMainBinding;
+import dev.ehyeon.moveapplication.ui.record.RecordFragment;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
@@ -74,16 +75,16 @@ public class MainActivity extends AppCompatActivity {
 
         if (itemId == R.id.menu_home) {
             showFragment(fragmentTransaction, "homeFragment");
+            hideFragment(fragmentTransaction, "recordFragment");
             hideFragment(fragmentTransaction, "statisticFragment");
-            hideFragment(fragmentTransaction, "settingFragment");
+        } else if (itemId == R.id.menu_record) {
+            showFragment(fragmentTransaction, "recordFragment");
+            hideFragment(fragmentTransaction, "homeFragment");
+            hideFragment(fragmentTransaction, "statisticFragment");
         } else if (itemId == R.id.menu_statistic) {
             showFragment(fragmentTransaction, "statisticFragment");
             hideFragment(fragmentTransaction, "homeFragment");
-            hideFragment(fragmentTransaction, "settingFragment");
-        } else if (itemId == R.id.menu_setting) {
-            showFragment(fragmentTransaction, "settingFragment");
-            hideFragment(fragmentTransaction, "homeFragment");
-            hideFragment(fragmentTransaction, "statisticFragment");
+            hideFragment(fragmentTransaction, "recordFragment");
         }
 
         fragmentTransaction.commit();
@@ -97,10 +98,10 @@ public class MainActivity extends AppCompatActivity {
         if (fragment == null) {
             if (fragmentTag.equals("homeFragment")) {
                 fragment = new HomeFragment();
-            } else if (fragmentTag.equals("statisticFragment")) {
+            } else if (fragmentTag.equals("recordFragment")) {
+                fragment = new RecordFragment();
+            } else { // fragmentTag.equals("statisticFragment")
                 fragment = new StatisticFragment();
-            } else { // fragmentTag.equals("settingFragment")
-                fragment = new SettingFragment();
             }
         }
 

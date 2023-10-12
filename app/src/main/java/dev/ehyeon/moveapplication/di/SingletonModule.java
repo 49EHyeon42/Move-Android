@@ -17,6 +17,7 @@ import dev.ehyeon.moveapplication.BuildConfig;
 import dev.ehyeon.moveapplication.data.local.record.HourlyRecordDao;
 import dev.ehyeon.moveapplication.data.local.record.RecordDao;
 import dev.ehyeon.moveapplication.data.remote.movestop.MoveStopService;
+import dev.ehyeon.moveapplication.data.remote.record.RecordService;
 import dev.ehyeon.moveapplication.data.remote.sign.SignService;
 import dev.ehyeon.moveapplication.data.remote.visited_move_stop.VisitedMoveStopService;
 import dev.ehyeon.moveapplication.room.MoveDatabase;
@@ -72,5 +73,11 @@ public class SingletonModule {
     @Singleton
     public VisitedMoveStopService provideVisitedMoveStopService(Retrofit retrofit) {
         return retrofit.create(VisitedMoveStopService.class);
+    }
+
+    @Provides
+    @Singleton
+    public RecordService provideRecordService(Retrofit retrofit) {
+        return retrofit.create(RecordService.class);
     }
 }
