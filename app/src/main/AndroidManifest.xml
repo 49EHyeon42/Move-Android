@@ -55,6 +55,10 @@
 
         <service android:name=".service.TrackingService" />
 
+        <activity
+            android:name=".ui.record.search.SearchRecordActivity"
+            android:theme="@style/Theme.MoveApplication" />
+
     </application>
 
 </manifest>

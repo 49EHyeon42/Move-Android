@@ -37,10 +37,22 @@
 
             </LinearLayout>
 
-            <com.prolificinteractive.materialcalendarview.MaterialCalendarView
-                android:id="@+id/recordFragment_calendarView"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="wrap_content">
+
+                <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                    android:id="@+id/recordFragment_calendarView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/search_record_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="조회" />
 
         </LinearLayout>
 

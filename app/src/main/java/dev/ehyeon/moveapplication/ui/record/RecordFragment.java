@@ -1,5 +1,6 @@
 package dev.ehyeon.moveapplication.ui.record;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ import dev.ehyeon.moveapplication.databinding.RecordFragmentBinding;
 import dev.ehyeon.moveapplication.ui.record.calendar_decorator.ExistsRecordViewDecorator;
 import dev.ehyeon.moveapplication.ui.record.calendar_decorator.SaturdayViewDecorator;
 import dev.ehyeon.moveapplication.ui.record.calendar_decorator.SundayViewDecorator;
+import dev.ehyeon.moveapplication.ui.record.search.SearchRecordActivity;
 
 @AndroidEntryPoint
 public class RecordFragment extends Fragment {
@@ -55,6 +57,7 @@ public class RecordFragment extends Fragment {
 
         initTextView();
         initCalendarView();
+        initButton();
 
         viewModel.refreshLayout(requireContext());
 
@@ -100,6 +103,19 @@ public class RecordFragment extends Fragment {
             existsRecordViewDecorator = new ExistsRecordViewDecorator(requireContext(), calendarDays);
 
             binding.recordFragmentCalendarView.addDecorator(existsRecordViewDecorator);
+        });
+    }
+
+    private void initButton() {
+        binding.searchRecordButton.setOnClickListener(view -> {
+            CalendarDay currentCalendarDay = binding.recordFragmentCalendarView.getSelectedDate();
+
+            Intent intent = new Intent(requireContext(), SearchRecordActivity.class);
+            intent.putExtra("year", currentCalendarDay.getYear());
+            intent.putExtra("month", currentCalendarDay.getMonth());
+            intent.putExtra("day", currentCalendarDay.getDay());
+
+            requireContext().startActivity(intent);
         });
     }
 }
