@@ -10,10 +10,19 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+
 import org.threeten.bp.LocalDate;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
+
 import dagger.hilt.android.AndroidEntryPoint;
+import dev.ehyeon.moveapplication.data.remote.record.SearchRecordResponse;
 import dev.ehyeon.moveapplication.databinding.RecordFragmentBinding;
+import dev.ehyeon.moveapplication.ui.record.calendar_decorator.ExistsRecordViewDecorator;
 import dev.ehyeon.moveapplication.ui.record.calendar_decorator.SaturdayViewDecorator;
 import dev.ehyeon.moveapplication.ui.record.calendar_decorator.SundayViewDecorator;
 
@@ -63,6 +72,8 @@ public class RecordFragment extends Fragment {
                 totalStep -> binding.recordFragmentTotalStepTextView.setText("총 걸음 수 " + totalStep + " 걸음"));
     }
 
+    private ExistsRecordViewDecorator existsRecordViewDecorator;
+
     private void initCalendarView() {
         binding.recordFragmentCalendarView.setSelectedDate(LocalDate.now());
 
@@ -70,5 +81,25 @@ public class RecordFragment extends Fragment {
 
         binding.recordFragmentCalendarView.setOnMonthChangedListener((widget, date) ->
                 viewModel.searchRecordByDate(requireContext(), date.getYear(), date.getMonth()));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        Set<CalendarDay> calendarDays = new HashSet<>();
+
+        viewModel.getSearchRecordResponseNonNullLiveData().observe(getViewLifecycleOwner(), searchRecordResponses -> {
+            for (SearchRecordResponse searchRecordResponse : searchRecordResponses) {
+                LocalDateTime localDateTime = LocalDateTime.parse(searchRecordResponse.getSavedDate(), formatter);
+
+                calendarDays.add(CalendarDay.from(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth()));
+            }
+
+            if (existsRecordViewDecorator != null) {
+                binding.recordFragmentCalendarView.removeDecorator(existsRecordViewDecorator);
+            }
+
+            existsRecordViewDecorator = new ExistsRecordViewDecorator(calendarDays);
+
+            binding.recordFragmentCalendarView.addDecorator(existsRecordViewDecorator);
+        });
     }
 }

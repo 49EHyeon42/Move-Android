@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,6 +35,7 @@ public class RecordFragmentViewModel extends ViewModel {
     private final NonNullMutableLiveData<Integer> totalMileageNonNullMutableLiveData;
     private final NonNullMutableLiveData<Double> totalTravelDistanceNonNullMutableLiveData;
     private final NonNullMutableLiveData<Double> totalStepNonNullMutableLiveData;
+    private final NonNullMutableLiveData<List<SearchRecordResponse>> searchRecordResponseNonNullMutableLiveData;
 
     @Inject
     public RecordFragmentViewModel(RecordService recordService) {
@@ -42,6 +44,7 @@ public class RecordFragmentViewModel extends ViewModel {
         totalMileageNonNullMutableLiveData = new NonNullMutableLiveData<>(0);
         totalTravelDistanceNonNullMutableLiveData = new NonNullMutableLiveData<>(0d);
         totalStepNonNullMutableLiveData = new NonNullMutableLiveData<>(0d);
+        searchRecordResponseNonNullMutableLiveData = new NonNullMutableLiveData<>(new ArrayList<>());
     }
 
     public void refreshLayout(Context context) {
@@ -118,10 +121,7 @@ public class RecordFragmentViewModel extends ViewModel {
                         return;
                     }
 
-                    // TODO clear, test
-                    for (SearchRecordResponse r : response.body()) {
-                        Log.w(TAG, "searchRecordResponse: " + r.getSavedDate());
-                    }
+                    searchRecordResponseNonNullMutableLiveData.setValue(response.body());
                 } else {
                     Log.w(TAG, "searchRecordByDate failed, response code is " + response.code());
 
@@ -136,5 +136,9 @@ public class RecordFragmentViewModel extends ViewModel {
                 Toast.makeText(context, "잠시 후 다시 시도하십시오.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public NonNullLiveData<List<SearchRecordResponse>> getSearchRecordResponseNonNullLiveData() {
+        return searchRecordResponseNonNullMutableLiveData;
     }
 }
