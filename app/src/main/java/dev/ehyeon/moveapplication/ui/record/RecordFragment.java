@@ -97,7 +97,7 @@ public class RecordFragment extends Fragment {
                 binding.recordFragmentCalendarView.removeDecorator(existsRecordViewDecorator);
             }
 
-            existsRecordViewDecorator = new ExistsRecordViewDecorator(calendarDays);
+            existsRecordViewDecorator = new ExistsRecordViewDecorator(requireContext(), calendarDays);
 
             binding.recordFragmentCalendarView.addDecorator(existsRecordViewDecorator);
         });
