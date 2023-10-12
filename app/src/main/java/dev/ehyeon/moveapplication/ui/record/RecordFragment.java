@@ -73,7 +73,7 @@ public class RecordFragment extends Fragment {
                 totalMileage -> binding.recordFragmentTotalMileageTextView.setText("마일리지 " + totalMileage + " 적립"));
 
         viewModel.getTotalTravelDistanceNonNullLiveData().observe(getViewLifecycleOwner(),
-                totalTravelDistance -> binding.recordFragmentTotalTravelDistanceTextView.setText("총 이동 거리 " + totalTravelDistance + " km"));
+                totalTravelDistance -> binding.recordFragmentTotalTravelDistanceTextView.setText("총 이동 거리 " + totalTravelDistance + " m"));
 
         viewModel.getTotalStepNonNullLiveData().observe(getViewLifecycleOwner(),
                 totalStep -> binding.recordFragmentTotalStepTextView.setText("총 걸음 수 " + totalStep + " 걸음"));

@@ -34,7 +34,7 @@ public class RecordFragmentViewModel extends ViewModel {
 
     private final NonNullMutableLiveData<Integer> totalMileageNonNullMutableLiveData;
     private final NonNullMutableLiveData<Double> totalTravelDistanceNonNullMutableLiveData;
-    private final NonNullMutableLiveData<Double> totalStepNonNullMutableLiveData;
+    private final NonNullMutableLiveData<Integer> totalStepNonNullMutableLiveData;
     private final NonNullMutableLiveData<List<SearchRecordResponse>> searchRecordResponseNonNullMutableLiveData;
 
     @Inject
@@ -43,7 +43,7 @@ public class RecordFragmentViewModel extends ViewModel {
         refreshStatusNonNullMutableLiveData = new NonNullMutableLiveData<>(false);
         totalMileageNonNullMutableLiveData = new NonNullMutableLiveData<>(0);
         totalTravelDistanceNonNullMutableLiveData = new NonNullMutableLiveData<>(0d);
-        totalStepNonNullMutableLiveData = new NonNullMutableLiveData<>(0d);
+        totalStepNonNullMutableLiveData = new NonNullMutableLiveData<>(0);
         searchRecordResponseNonNullMutableLiveData = new NonNullMutableLiveData<>(new ArrayList<>());
     }
 
@@ -66,7 +66,7 @@ public class RecordFragmentViewModel extends ViewModel {
 
                     totalMileageNonNullMutableLiveData.setValue(response.body().getTotalMileage());
                     totalTravelDistanceNonNullMutableLiveData.setValue(response.body().getTotalTravelDistance());
-                    totalStepNonNullMutableLiveData.setValue(response.body().getTotalStep());
+                    totalStepNonNullMutableLiveData.setValue((int) response.body().getTotalStep());
                 } else {
                     Log.w(TAG, "searchTotalRecord failed, response code is " + response.code());
 
@@ -99,7 +99,7 @@ public class RecordFragmentViewModel extends ViewModel {
         return totalTravelDistanceNonNullMutableLiveData;
     }
 
-    public NonNullLiveData<Double> getTotalStepNonNullLiveData() {
+    public NonNullLiveData<Integer> getTotalStepNonNullLiveData() {
         return totalStepNonNullMutableLiveData;
     }
 
