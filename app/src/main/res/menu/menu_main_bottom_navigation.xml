@@ -10,14 +10,8 @@
 
     <item
         android:id="@+id/menu_record"
-        android:icon="@drawable/menu_main_bottom_navigation_statistic"
+        android:icon="@drawable/calendar"
         android:title="@string/menu_record_title"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/menu_statistic"
-        android:icon="@drawable/menu_main_bottom_navigation_statistic"
-        android:title="@string/menu_statistic_title"
         app:showAsAction="ifRoom" />
 
 </menu>

@@ -76,15 +76,9 @@ public class MainActivity extends AppCompatActivity {
         if (itemId == R.id.menu_home) {
             showFragment(fragmentTransaction, "homeFragment");
             hideFragment(fragmentTransaction, "recordFragment");
-            hideFragment(fragmentTransaction, "statisticFragment");
-        } else if (itemId == R.id.menu_record) {
+        } else {
             showFragment(fragmentTransaction, "recordFragment");
             hideFragment(fragmentTransaction, "homeFragment");
-            hideFragment(fragmentTransaction, "statisticFragment");
-        } else if (itemId == R.id.menu_statistic) {
-            showFragment(fragmentTransaction, "statisticFragment");
-            hideFragment(fragmentTransaction, "homeFragment");
-            hideFragment(fragmentTransaction, "recordFragment");
         }
 
         fragmentTransaction.commit();
@@ -98,10 +92,8 @@ public class MainActivity extends AppCompatActivity {
         if (fragment == null) {
             if (fragmentTag.equals("homeFragment")) {
                 fragment = new HomeFragment();
-            } else if (fragmentTag.equals("recordFragment")) {
+            } else { // fragmentTag.equals("recordFragment")
                 fragment = new RecordFragment();
-            } else { // fragmentTag.equals("statisticFragment")
-                fragment = new StatisticFragment();
             }
         }
 

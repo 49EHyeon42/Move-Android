@@ -23,7 +23,10 @@ import java.util.Set;
 import dagger.hilt.android.AndroidEntryPoint;
 import dev.ehyeon.moveapplication.data.remote.record.SearchRecordResponse;
 import dev.ehyeon.moveapplication.databinding.RecordFragmentBinding;
-import dev.ehyeon.moveapplication.ui.record.calendar_decorator.ExistsRecordViewDecorator;
+import dev.ehyeon.moveapplication.ui.record.calendar_decorator.FiveRecordViewDecorator;
+import dev.ehyeon.moveapplication.ui.record.calendar_decorator.OneRecordViewDecorator;
+import dev.ehyeon.moveapplication.ui.record.calendar_decorator.ThreeRecordViewDecorator;
+import dev.ehyeon.moveapplication.ui.record.calendar_decorator.ZeroRecordViewDecorator;
 import dev.ehyeon.moveapplication.ui.record.calendar_decorator.SaturdayViewDecorator;
 import dev.ehyeon.moveapplication.ui.record.calendar_decorator.SundayViewDecorator;
 import dev.ehyeon.moveapplication.ui.record.search.SearchRecordActivity;
@@ -79,7 +82,10 @@ public class RecordFragment extends Fragment {
                 totalStep -> binding.recordFragmentTotalStepTextView.setText("총 걸음 수 " + totalStep + " 걸음"));
     }
 
-    private ExistsRecordViewDecorator existsRecordViewDecorator;
+    private ZeroRecordViewDecorator zeroRecordViewDecorator;
+    private OneRecordViewDecorator oneRecordViewDecorator;
+    private ThreeRecordViewDecorator threeRecordViewDecorator;
+    private FiveRecordViewDecorator fiveRecordViewDecorator;
 
     private void initCalendarView() {
         binding.recordFragmentCalendarView.setSelectedDate(LocalDate.now());
@@ -91,22 +97,53 @@ public class RecordFragment extends Fragment {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-        Set<CalendarDay> calendarDays = new HashSet<>();
+        Set<CalendarDay> zero = new HashSet<>();
+        Set<CalendarDay> one = new HashSet<>();
+        Set<CalendarDay> three = new HashSet<>();
+        Set<CalendarDay> five = new HashSet<>();
 
         viewModel.getSearchRecordResponseNonNullLiveData().observe(getViewLifecycleOwner(), searchRecordResponses -> {
+            zero.clear();
+            one.clear();
+            three.clear();
+            five.clear();
+
             for (SearchRecordResponse searchRecordResponse : searchRecordResponses) {
                 LocalDateTime localDateTime = LocalDateTime.parse(searchRecordResponse.getSavedDate(), formatter);
 
-                calendarDays.add(CalendarDay.from(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth()));
+                if (searchRecordResponse.getTotalTravelDistance() < 1000) {
+                    zero.add(CalendarDay.from(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth()));
+                } else if (searchRecordResponse.getTotalTravelDistance() < 3000) {
+                    one.add(CalendarDay.from(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth()));
+                } else if (searchRecordResponse.getTotalTravelDistance() < 5000) {
+                    three.add(CalendarDay.from(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth()));
+                } else {
+                    five.add(CalendarDay.from(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth()));
+                }
             }
 
-            if (existsRecordViewDecorator != null) {
-                binding.recordFragmentCalendarView.removeDecorator(existsRecordViewDecorator);
+            if (zeroRecordViewDecorator != null) {
+                binding.recordFragmentCalendarView.removeDecorator(zeroRecordViewDecorator);
             }
 
-            existsRecordViewDecorator = new ExistsRecordViewDecorator(requireContext(), calendarDays);
+            if (oneRecordViewDecorator != null) {
+                binding.recordFragmentCalendarView.removeDecorator(oneRecordViewDecorator);
+            }
 
-            binding.recordFragmentCalendarView.addDecorator(existsRecordViewDecorator);
+            if (threeRecordViewDecorator != null) {
+                binding.recordFragmentCalendarView.removeDecorator(threeRecordViewDecorator);
+            }
+
+            if (fiveRecordViewDecorator != null) {
+                binding.recordFragmentCalendarView.removeDecorator(fiveRecordViewDecorator);
+            }
+
+            zeroRecordViewDecorator = new ZeroRecordViewDecorator(requireContext(), zero);
+            oneRecordViewDecorator = new OneRecordViewDecorator(requireContext(), one);
+            threeRecordViewDecorator = new ThreeRecordViewDecorator(requireContext(), three);
+            fiveRecordViewDecorator = new FiveRecordViewDecorator(requireContext(), five);
+
+            binding.recordFragmentCalendarView.addDecorators(zeroRecordViewDecorator, oneRecordViewDecorator, threeRecordViewDecorator, fiveRecordViewDecorator);
         });
     }
 

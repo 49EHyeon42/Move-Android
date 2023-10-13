@@ -13,13 +13,13 @@ import java.util.Set;
 
 import dev.ehyeon.moveapplication.R;
 
-public class ExistsRecordViewDecorator implements DayViewDecorator {
+public class OneRecordViewDecorator implements DayViewDecorator {
 
     private final Drawable drawable;
     private final Set<CalendarDay> calendarDays;
 
-    public ExistsRecordViewDecorator(Context context, Set<CalendarDay> calendarDays) {
-        drawable = AppCompatResources.getDrawable(context, R.drawable.smile);
+    public OneRecordViewDecorator(Context context, Set<CalendarDay> calendarDays) {
+        drawable = AppCompatResources.getDrawable(context, R.drawable.one);
         this.calendarDays = calendarDays;
     }
 
